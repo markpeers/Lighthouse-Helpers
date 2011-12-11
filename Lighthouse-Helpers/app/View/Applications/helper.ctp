@@ -24,7 +24,7 @@
 <div id="tabs">
 	<ul>
 		<li><a href="#tabs-1">Helper</a></li>
-		<li><a href="#tabs-2">Referees</a></li>
+		<li><a href="ajaxreferee">Referees</a></li>
 		<li><a href="#tabs-3">References</a></li>
 		<li><a href="ajaxhelpoffered">Help Offered</a></li>
 		<li><a href="ajaxroleassigned">Roles Assigned</a></li>

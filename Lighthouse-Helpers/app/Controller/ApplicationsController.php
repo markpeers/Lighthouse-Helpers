@@ -1,14 +1,14 @@
 <?php
 class ApplicationsController extends AppController {
-	public $uses = array('Application', 'Role', 'Church', 'AssignedRole', 'AssignedSession');
-    public $name = 'Applications';
+	public $uses = array('Application', 'Role', 'Church', 'AssignedRole', 'AssignedSession', 'Person');
+	public $name = 'Applications';
 
-    public $paginate = array(
+	public $paginate = array(
         'limit' => 10,
         'order' => array(
             'Person.Last_Name' => 'asc',
 			'Person.First_Name' => 'asc'
-        	),
+	),
 		'fields' => array(
 			'Application.Application_ID',
 			'Application.Year',
@@ -16,94 +16,88 @@ class ApplicationsController extends AppController {
 			'Person.Title',
 			'Person.First_Name',
 			'Person.Last_Name'
-			)
-		);
-    
-    private function getsessiondata() {
-    	//a helper function to check for information in the session
-    	//if there is none then sensible default is added
-    	//session data is returned in $data
-    	
-       	if ($this->Session->check('Filter.Years') == false) {
-       		debug('Filter.years not set');
-    		$sql = 'SELECT DISTINCT (`Application`.`Year`) AS lhyear ';
-	    	$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
-	    	$sql = $sql . 'WHERE `Application`.`Year` > 2000 ';
-	    	$sql = $sql . 'ORDER BY `Application`.`Year` DESC ';
-	    	
-	    	$lhyearsobj = $this->Application->query($sql);
-	    	
-			foreach ($lhyearsobj as $lhyearobj):
-				$lhyears[$lhyearobj['Application']['lhyear']] = $lhyearobj['Application']['lhyear'];
-				//debug($lhyearobj['Application']['lhyear']);
-			endforeach;
-       		$this->Session->write('Filter.Years', $lhyears);
-       		//print_r($lhyearsobj);
-       		$this->Session->write('Filter.Year', $lhyearsobj[0]['Application']['lhyear']);
-       		//debug('Years in session ');
-    		//print_r($lhyears);
-    	}
-    	else {
-    		//debug('Filter.years is setxxx');
-    	}
-    	//print_r($this->Session->read('Filter.Years'));
-    	//print_r($this->Session->read('Filter.Year'));
-    	 
-    	    	
-    	if ($this->Session->check('Filter.Year')) {
-    		$lhyear = $this->Session->read('Filter.Year');
-    		//debug('Year in session '.$lhyear);
-    	}
-    	else {
-    		$lhyearsobj = $this->Session->read('Filter.Years');
-    		
-    		$lhyear = $lhyearsobj[0]['Application']['lhyear'];
-    		//debug('No Year in session');
-    		$this->Session->write('Filter.Year', $lhyear);
-    	}
-    	
-    	$data = array(	'lhyear' => $lhyear,
-    					'lhyears' => $this->Session->read('Filter.Years')
-    					);
-    	
-    	return $data;
-    }
+	)
+	);
 
-    function index() {
-    	
-    	//$this->Session->delete('Filter');
-    	
-    	$sessiondata = $this->getsessiondata();
-    	$lhyear = $sessiondata['lhyear'];
-    	$lhyears = $sessiondata['lhyears'];
-    	 
-//		$lhyear = 2011;
-		
+
+	private function getsessiondata() {
+		//a helper function to check for information in the session
+		//if there is none then sensible default is added
+		//session data is returned in $data
+		 
+		 
+		if ($this->Session->check('Filter.Years') == false) {
+			debug('Filter.years not set');
+			$sql = 'SELECT DISTINCT (`Application`.`Year`) AS lhyear ';
+			$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
+			$sql = $sql . 'WHERE `Application`.`Year` > 2000 ';
+			$sql = $sql . 'ORDER BY `Application`.`Year` DESC ';
+
+			$lhyearsobj = $this->Application->query($sql);
+
+			foreach ($lhyearsobj as $lhyearobj):
+			$lhyears[$lhyearobj['Application']['lhyear']] = $lhyearobj['Application']['lhyear'];
+			//debug($lhyearobj['Application']['lhyear']);
+			endforeach;
+			$this->Session->write('Filter.Years', $lhyears);
+			//print_r($lhyearsobj);
+			$this->Session->write('Filter.Year', $lhyearsobj[0]['Application']['lhyear']);
+			//debug('Years in session ');
+			//print_r($lhyears);
+		}
+		else {
+			//debug('Filter.years is setxxx');
+		}
+		//print_r($this->Session->read('Filter.Years'));
+		//print_r($this->Session->read('Filter.Year'));
+
+
+		if ($this->Session->check('Filter.Year')) {
+			$lhyear = $this->Session->read('Filter.Year');
+			//debug('Year in session '.$lhyear);
+		}
+		else {
+			$lhyearsobj = $this->Session->read('Filter.Years');
+
+			$lhyear = $lhyearsobj[0]['Application']['lhyear'];
+			//debug('No Year in session');
+			$this->Session->write('Filter.Year', $lhyear);
+		}
+		 
+		$data = array(	'lhyear' => $lhyear,
+    					'lhyears' => $this->Session->read('Filter.Years')
+		);
+		 
+		return $data;
+	}
+
+	function index() {
+
+		//		$this->Session->setflash('Flash message');
+
+		$sessiondata = $this->getsessiondata();
+		$lhyear = $sessiondata['lhyear'];
+		$lhyears = $sessiondata['lhyears'];
+
+		//check to see if the filter is being changed
 		if (!empty($this->request->data)) {
 			$lhyear = $this->request->data['Filter']['Year'];
+			//write the updated filter year to the session
 			$this->Session->write('Filter.Year', $lhyear);
-				
-			//debug($this->request->data);
 		}
-		
-		//$lhyear = '2011';
 
+		//get role counts from database - couldn't do this with cake
 		$sql = 'SELECT `Role`.`Role_per_agegroup` AS `AgeGroup` ,`Role`.`RoleName` AS `RoleName`,COUNT(`Application`.`Application_ID`) AS `Qty` ';
 		$sql = $sql . 'FROM `reg_helpers_role_assigned` AS `AssignedRoles` ';
-		$sql = $sql . 'LEFT JOIN `reg_helpers_role` AS `Role` ON (`AssignedRoles`.`tblRole_Role_ID` = `Role`.`Role_ID`) '; 
+		$sql = $sql . 'LEFT JOIN `reg_helpers_role` AS `Role` ON (`AssignedRoles`.`tblRole_Role_ID` = `Role`.`Role_ID`) ';
 		$sql = $sql . 'LEFT JOIN `reg_helpers_application` AS `Application` ON (`AssignedRoles`.`tblApplication_Application_ID` = `Application`.`Application_ID`) ';
-		$sql = $sql . 'WHERE `Application`.`Year` = ' . $lhyear . ' '; 
+		$sql = $sql . 'WHERE `Application`.`Year` = ' . $lhyear . ' ';
 		$sql = $sql . 'GROUP BY `Role`.`Role_per_agegroup`,`Role`.`RoleName`';
 
 		$rolecounts = $this->Application->query($sql);
-		
-//		debug($lhyears);
+
+		//get total number of helpers for current year
 		$totalHelpers = $this->Application->find('count', array('conditions' => array('Application.Year' => $lhyear)));
-//		$roles = $this->Application->AssignedRoles->find('all', array('fields' => array('Role.RoleName',
-//																						'Application.Application_ID',
-//																						'Role.Role_per_agegroup'),
-//																		'conditions' => array('Application.Year' => $lhyear),
-//																		'order' => 'Role.RoleName'));
 
 		$rolearray = array();
 		// arrays are toddler, 4s, 5s, 6s, 7s, 8s, 9s, 10+, 12
@@ -150,11 +144,11 @@ class ApplicationsController extends AppController {
 		$treasurer = array('Treasurer','-',0);
 		$vicechair = array('Vice Chair','-',0);
 		$water = array('Water Tent',0,0);
-		
-		foreach($rolecounts as $role):		
-			//array_push($rolearray, $role['Role']['RoleName']);
-			switch ($role['Role']['RoleName'])
-			{
+
+		foreach($rolecounts as $role):
+		//array_push($rolearray, $role['Role']['RoleName']);
+		switch ($role['Role']['RoleName'])
+		{
 			case 'Toddler Helper': $lhk[1] = $role[0]['Qty']; break;
 			case 'Lighthouse Keeper - 4\'s': $lhk[2] = $role[0]['Qty']; break;
 			case 'Lighthouse Keeper - 5\'s': $lhk[3] = $role[0]['Qty']; break;
@@ -255,52 +249,45 @@ class ApplicationsController extends AppController {
 			case 'Water Tent - Leader': $water[1] = $role[0]['Qty']; break;
 			default:
 			 // code to be executed if n is different from both label1 and label2;
-			}			
+		}
 		endforeach;
 		//$rolecounts = array_count_values($rolearray);
-//		print_r($rolecounts);
+		//		print_r($rolecounts);
 		$agegrouproles = array($lhk,$ll,$agl,$teacher,$special);
 		$otherroles = array($admin,$carpark,$chairman,$comforts,$craft4,$craft,$craft10,$craftprep,
-							$drama,$evenbbq,$evengen,$evenactivity,$eventuck,$firstaid,$helperchildren,
-							$lifeboat,$cafe,$mainstage,$music,$pastoral,$photo,$quiettent,$registrations,
-							$sales,$saturday,$security,$siteup,$site,$sitedown,$siteman,$sport,$tech,
-							$toysale,$treasurer,$vicechair,$water);
-		
+		$drama,$evenbbq,$evengen,$evenactivity,$eventuck,$firstaid,$helperchildren,
+		$lifeboat,$cafe,$mainstage,$music,$pastoral,$photo,$quiettent,$registrations,
+		$sales,$saturday,$security,$siteup,$site,$sitedown,$siteman,$sport,$tech,
+		$toysale,$treasurer,$vicechair,$water);
+
+
 		$summarys = array('TotalHelpers' => $totalHelpers,
 							'AgeGroupHeader' => $agegroupheader,
 							'AgeGroupRoles' => $agegrouproles,
 							'OtherRolesHeader' => $otherrolesheader,
 							'OtherRoles' => $otherroles,
 							'LHYears' => $sessiondata['lhyears']);
-		
-        $this->set('summarys', $summarys);
-//      $this->set('totalHelpers', $totalHelpers);
-//		$this->set('agegrouproles', $agegrouproles);
-		
+
+		$this->set('summarys', $summarys);
 	}
-	
-    function helperlist() {
-    	
-    	$sessiondata = $this->getsessiondata();
-    	$lhyear = $sessiondata['lhyear'];
-    	$lhyears = $sessiondata['lhyears'];
-    	
+
+	function helperlist() {
+		 
+		$sessiondata = $this->getsessiondata();
+		$lhyear = $sessiondata['lhyear'];
+		$lhyears = $sessiondata['lhyears'];
+		 
 		if (!empty($this->request->data)) {
 			$lhyear = $this->request->data['Filter']['Year'];
 			$this->Session->write('Filter.Year', $lhyear);
 		}
 		$this->paginate['conditions'] = array(
     		'Application.Year'=> $this->Session->read('Filter.Year')
-			);
-		
-		$this->set('LHYears', $lhyears);
-        $this->set('applications', $this->paginate());
-    }
+		);
 
-    public function view($id = null) {
-        $this->Application->id = $id;
-        $this->set('application', $this->Application->read());
-    }
+		$this->set('LHYears', $lhyears);
+		$this->set('applications', $this->paginate());
+	}
 
 	public function helper($application_id = null, $person_id = null, $year = null) {
 		//debug('Test');
@@ -310,190 +297,197 @@ class ApplicationsController extends AppController {
 			switch ($tab) {
 				case 'ajaxtest':
 					$data = array('tab' => $tab);
-				break;
-				
+					break;
+
 				case 'ajaxconfidential':
- 					$data = $this->Application->find('first',
-													array('fields' => array('Application.Conviction',
-																			'Application.Caution',
-																			'Application.Court',
-																			'Application.Conduct',
-																			'Application.Childprotection',
-																			'Application.Healthproblems',
-																			'Application.Othername',
-																			'Application.Otheraddress',
-																			'Application.Conviction_details',
-																			'Application.Caution_details',
-																			'Application.Court_details',
-																			'Application.Conduct_details',
-																			'Application.Childprotection_details',
-																			'Application.Healthproblems_details',
-																			'Application.Othername_details',
-																			'Application.Otheraddress_details'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					$data = $this->Application->find('first',
+					array('fields' => array('Application.Conviction',
+											'Application.Caution',
+											'Application.Court',
+											'Application.Conduct',
+											'Application.Childprotection',
+											'Application.Healthproblems',
+											'Application.Othername',
+											'Application.Otheraddress',
+											'Application.Conviction_details',
+											'Application.Caution_details',
+											'Application.Court_details',
+											'Application.Conduct_details',
+											'Application.Childprotection_details',
+											'Application.Healthproblems_details',
+											'Application.Othername_details',
+											'Application.Otheraddress_details'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxconfirmation':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.Confirmation_email_sent',
-																			'Application.Confirmation_email_date'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					array('fields' => array('Application.Confirmation_email_sent',
+											'Application.Confirmation_email_date'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxnotes':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.Notes'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
+					array('fields' => array('Application.Notes'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
 
 				case 'ajaxemergencycontact':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.Emergency_contact',
-																			'Application.Emergency_phone1',
-																			'Application.Emergency_phone2',
-																			'Application.Emergency_relationship'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					array('fields' => array('Application.Emergency_contact',
+											'Application.Emergency_phone1',
+											'Application.Emergency_phone2',
+											'Application.Emergency_relationship'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxlhaddress':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.LH_Address_1',
-																			'Application.LH_Address_2',
-																			'Application.LH_Town',
-																			'Application.LH_County',
-																			'Application.LH_Post_Code',
-																			'Application.LH_Telephone'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					array('fields' => array('Application.LH_Address_1',
+											'Application.LH_Address_2',
+											'Application.LH_Town',
+											'Application.LH_County',
+											'Application.LH_Post_Code',
+											'Application.LH_Telephone'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxcrb':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.CRB',
-																			'Application.CRB_type',
-																			'Application.CRB_date',
-																			'Application.CRB_number',
-																			'Application.CRB_note'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					array('fields' => array('Application.CRB',
+											'Application.CRB_type',
+											'Application.CRB_date',
+											'Application.CRB_number',
+											'Application.CRB_note'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxdeclaration':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.Parental_consent',
-																			'Application.Declaration_signed',
-																			'Application.Signature'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					array('fields' => array('Application.Parental_consent',
+											'Application.Declaration_signed',
+											'Application.Signature'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxhealth':
 					$data = $this->Application->find('first',
-													array('fields' => array('Application.Medical',
-																			'Application.Medical_note'),
-														'conditions' => array('Application.Application_ID' => $application_id)
-														)
-													);
-				break;
-				
+					array('fields' => array('Application.Medical',
+											'Application.Medical_note'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxexperience':
 					$data = $this->Application->find('first',
-												array('fields' => array('Application.Previous_experience',
-																		'Application.Experience_notes',
-																		'Application.Special_needs',
-																		'Application.Language',
-																		'Application.First_aid_cert',
-																		'Application.Helped_before'),
-													'conditions' => array('Application.Application_ID' => $application_id)
-													)
-												);
-				break;
-				
+					array('fields' => array('Application.Previous_experience',
+											'Application.Experience_notes',
+											'Application.Special_needs',
+											'Application.Language',
+											'Application.First_aid_cert',
+											'Application.Helped_before'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+					));
+					break;
+
 				case 'ajaxroleassigned';
-/* 					$data = $this->Application->find('all',
-												array('fields' => array('Role.RoleName',
-																		'AssignedRole.badge_printed',
-																		'AssignedRole.Sent_to_AGL',
-																		'Session.Description'
-																		),
-													'conditions' => array('Application.Application_ID' => $application_id),
-													'recursive' => 0));
- */					$data = $this->AssignedRole->find('all',
-												array('fields' => array('Role.RoleName',
-																		'AssignedRole.Role_Assigned_ID',
-																		'AssignedRole.badge_printed',
-																		'AssignedRole.Sent_to_AGL'),
-													'conditions' => array('AssignedRole.tblApplication_Application_ID' => $id),
-													'recursive' => 2));
+				$this->Application->contain(array('AssignedRole',
+													'AssignedRole.Role',
+													'AssignedRole.AssignedSession',
+													'AssignedRole.AssignedSession.Session'));
+				$data = $this->Application->find('first',
+					array('fields' => array('Application.Application_ID'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+				));
+
 				break;
-				
+
 				case 'ajaxhelpoffered';
-					;
+				$this->Application->contain(array('OfferedRole',
+													'OfferedRole.Role',
+													'OfferedRole.OfferedSession',
+													'OfferedRole.OfferedSession.Session'));
+				$data = $this->Application->find('first',
+					array('fields' => array('Application.Application_ID'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+				));
+				
 				break;
 				
+				case 'ajaxreferees';
+				$this->Application->contain(array('People',
+													'RefereeTemp'
+													));
+				$data = $this->Application->find('first',
+					array('fields' => array('Application.Application_ID'),
+						'conditions' => array('Application.Application_ID' => $application_id)
+				));
+
+				break;
+
 				default:
 					;
-				break;
+					break;
 			}
-			
+				
 			$this->set('data', $data);
 			$this->render($tab, 'ajax');
 		}
 		else {
-		$application = $this->Application->find('first',  
-											array('fields' => array('Application.Application_ID',
-																	'Application.Year',
-																	'Person.Person_ID',
-        															'Person.Nickname',
-																	'Person.Last_Name',
-																	'Person.Address_1',
-																	'Person.Address_2',
-																	'Person.Town',
-																	'Person.County',
-																	'Person.Post_Code',
-																	'Person.email',
-																	'Person.Telephone_1',
-																	'Person.Telephone_2',
-																	'Person.Date_of_birth',
-																	'Person.tblChurch_Church_ID'
-        															),
-												'conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
-																	'Application.Year' => $year ),
-												'recursive' => 0));
-		$church = $this->Church->find('first',
-									array('fields' => array('Church.Name'),
+			$application = $this->Application->find('first',
+				array('fields' => array('Application.Application_ID',
+										'Application.Year',
+										'Person.Person_ID',
+	    								'Person.Nickname',
+										'Person.Last_Name',
+										'Person.Address_1',
+										'Person.Address_2',
+										'Person.Town',
+										'Person.County',
+										'Person.Post_Code',
+										'Person.email',
+										'Person.Telephone_1',
+										'Person.Telephone_2',
+										'Person.Date_of_birth',
+										'Person.tblChurch_Church_ID'
+				),
+					'conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
+											'Application.Year' => $year ),
+											'recursive' => 0));
+			
+			$church = $this->Church->find('first',
+			array('fields' => array('Church.Name'),
 										'conditions' => array('Church.Church_ID' => $application['Person']['tblChurch_Church_ID'])));
-					
-		$this->set('data', array('Application' => $application, 'Church' => $church));
+				
+			$this->set('data', array('Application' => $application, 'Church' => $church));
 		}
 	}
-	
+
 	public function test($id = null) {
-/* 		$this->Application->contain(array('AssignedRole' => array('Role' => array('fields' => array('Role.Role_ID','Role.RoleName')),
-																	'AssignedSession' => array('Session'),
-																	)));
- */		$this->Application->contain(array('AssignedRole.tblRole_Role_ID',
-											'AssignedRole.badge_printed',
-											'AssignedRole.Role',
-											'AssignedRole.AssignedSession.Session'));
-		$data = $this->Application->find('all',
-										array('fields' => array('Application.Application_ID'),
-												'conditions' => array('Application.Application_ID' => $id)
-												));
+		
+		$this->Person->contain('RefereeTemp',
+								'RefereeTemp.year = 2011');
+			
+		$data = $this->Person->find('first',
+			array('fields' => array('Person.Person_ID'),
+				'conditions' => array('Person.Person_ID' => $id),
+		));
+		
 		debug($data);
 	}
-	
-}
-?>
 
+	 
+	 
+	function clearsession() {
+		$this->Session->delete('Filter');
+		$this->redirect(array('controller' => 'applications', 'action' => 'index'));
+	}
+}

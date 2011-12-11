@@ -1,5 +1,5 @@
 <?php
-$cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework');
+$cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 ?>
 <!DOCTYPE html>
 <html>
@@ -26,8 +26,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 				ajaxOptions: {
 					error: function( xhr, status, index, anchor ) {
 						$( anchor.hash ).html(
-							"Couldn't load this tab. We'll try to fix this as soon as possible. " +
-							"If this wouldn't be a demo." );
+							"Couldn't load this tab. We'll try to fix this as soon as possible. ");
 					}
 				}
 			});
@@ -38,7 +37,7 @@ $cakeDescription = __d('cake_dev', 'CakePHP: the rapid development php framework
 <body>
 	<div id="container">
 		<div id="header">
-			<h1><?php echo $this->Html->link($cakeDescription, 'http://cakephp.org'); ?></h1>
+			<h1><?php echo $this->Html->link($cakeDescription, 'http://www.lighthousemissenden.org.uk'); ?></h1>
 		</div>
 		<div id="content">
 

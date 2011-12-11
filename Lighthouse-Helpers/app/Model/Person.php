@@ -13,6 +13,9 @@ class Person extends AppModel {
 	public $hasMany = array(
 			'Application' => array(
 				'className' => 'Application',
+				'foreignKey' => 'tblPerson_Person_ID'),
+			'RefereeTemp' => array(
+				'className' => 'RefereeTemp',
 				'foreignKey' => 'tblPerson_Person_ID'));
 	
 						

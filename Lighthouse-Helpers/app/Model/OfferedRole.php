@@ -1,5 +1,6 @@
 <?php
 class OfferedRole extends AppModel {
+	public $name = 'OfferedRole';
 	public $useTable = 'role_offered';
 	public $primaryKey = 'Role_Offered_ID';
 
@@ -11,4 +12,11 @@ class OfferedRole extends AppModel {
 				'className' => 'Application',
 				'foreignKey' => 'tblApplication_Application_ID'));
 
+	
+	public $hasMany = array(
+			'OfferedSession' => array(
+						'className' => 'OfferedSession',
+						'foreignKey' => 'tblRole_Offered_Role_Offered_ID'));
+		
+		
 }

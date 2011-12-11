@@ -1,15 +1,17 @@
-<?php debug($data);?>
+<?php //debug($data);?>
 <table>
 	<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th></tr>
-<?php foreach ($data as $assignedrole): ?>
+<?php foreach ($data['AssignedRole'] as $assignedrole): ?>
 	<tr><td><?php echo $assignedrole['Role']['RoleName'];?></td>
-		<td>Sessions go here</td>
-		<td><?php if ($assignedrole['AssignedRole']['Sent_to_AGL'] == NULL) {
+		<td><?php foreach ($assignedrole['AssignedSession'] as $lhsession) {
+			echo $lhsession['Session']['Description'].', ';
+		}?></td>
+		<td><?php if ($assignedrole['Sent_to_AGL'] == NULL) {
 						echo 'No';
 					}else{
-						echo date('jS F Y',strtotime($assignedrole['AssignedRole']['Sent_to_AGL']));
+						echo date('jS F Y',strtotime($assignedrole['Sent_to_AGL']));
 					}?></td>
-		<td><?php if($assignedrole['AssignedRole']['badge_printed'] == 0) {
+		<td><?php if($assignedrole['badge_printed'] == 0) {
 						echo 'No';
 					}
 					else {

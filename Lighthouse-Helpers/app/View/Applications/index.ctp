@@ -27,7 +27,8 @@
 	<table>
 		<tr>
 			<td><?php echo $this->Form->input('Year', array(
-					    'options' => $summarys['LHYears'],
+//					    'options' => $summarys['LHYears'],
+						'options' => $this->Session->read('Filter.Years'),
 					    'default' => $this->Session->read('Filter.Year')
 					    //'empty' => '(choose one)'
 						));?></td>
