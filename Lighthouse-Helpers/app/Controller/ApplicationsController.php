@@ -442,39 +442,37 @@ class ApplicationsController extends AppController {
 			$this->render($tab, 'ajax');
 		}
 		else {
+			$this->Application->contain(array('Person',
+											'Person.Church',
+											'Person.RefereeTemp',
+											'Person.RefereeTemp.year = '.$year,
+											'Person.Reference',
+											'Person.Reference.Referee',
+											'Person.Reference.year = '.$year,
+											'OfferedRole',
+											'OfferedRole.Role',
+											'OfferedRole.OfferedSession',
+											'OfferedRole.OfferedSession.Session',
+											'AssignedRole',
+											'AssignedRole.Role',
+											'AssignedRole.AssignedSession',
+											'AssignedRole.AssignedSession.Session'));
 			$application = $this->Application->find('first',
-				array('fields' => array('Application.Application_ID',
-										'Application.Year',
-										'Person.Person_ID',
-	    								'Person.Nickname',
-										'Person.Last_Name',
-										'Person.Address_1',
-										'Person.Address_2',
-										'Person.Town',
-										'Person.County',
-										'Person.Post_Code',
-										'Person.email',
-										'Person.Telephone_1',
-										'Person.Telephone_2',
-										'Person.Date_of_birth',
-										'Person.tblChurch_Church_ID'
-				),
-					'conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
-											'Application.Year' => $year ),
-											'recursive' => 0));
+ 				array('conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
+											'Application.Year' => $year )
+											));
 			
-			$church = $this->Church->find('first',
-			array('fields' => array('Church.Name'),
-										'conditions' => array('Church.Church_ID' => $application['Person']['tblChurch_Church_ID'])));
 				
-			$this->set('data', array('Application' => $application, 'Church' => $church));
+			$this->set('data', $application);
+//			$this->set('data', array('Application' => $application));
 		}
 	}
 
 	public function test($id = null) {
 		
-		$this->Person->contain('RefereeTemp',
-								'RefereeTemp.year = 2011');
+		$this->Person->contain('Reference',
+								'Reference.year = 2011',
+								'Reference.Referee');
 			
 		$data = $this->Person->find('first',
 			array('fields' => array('Person.Person_ID'),

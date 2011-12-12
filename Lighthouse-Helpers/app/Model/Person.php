@@ -16,9 +16,10 @@ class Person extends AppModel {
 				'foreignKey' => 'tblPerson_Person_ID'),
 			'RefereeTemp' => array(
 				'className' => 'RefereeTemp',
+				'foreignKey' => 'tblPerson_Person_ID'),
+			'Reference' => array(
+				'className' => 'Reference',
 				'foreignKey' => 'tblPerson_Person_ID'));
-	
-						
 
 }
 
