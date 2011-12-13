@@ -5,10 +5,10 @@
 <div class="index">
 <table>
     <tr>
-		<th><?php echo $this->Paginator->sort('Title');?></th>
-		<th><?php echo $this->Paginator->sort('First_Name');?></th>
-		<th><?php echo $this->Paginator->sort('Last_Name');?></th>
-		<th><?php echo $this->Paginator->sort('Year');?></th>
+		<th><?php echo 'Title';?></th>
+		<th><?php echo $this->Paginator->sort('Person.First_Name', 'First Name');?></th>
+		<th><?php echo $this->Paginator->sort('Person.Last_Name', 'Last Name');?></th>
+		<th><?php echo 'Year';?></th>
 		<th class="actions"><?php echo __('Actions');?></th>
     </tr>
 
