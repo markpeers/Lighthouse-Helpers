@@ -1,7 +1,7 @@
 <!-- File: /app/View/People/index.ctp -->
 <div class="people index">
 	<h2>Helpers</h2>
-	<table cellpadding="0" cellspacing="0">
+	<table>
 		<tr>
 			<th><?php echo $this->Paginator->sort('Person_ID');?></th>
 			<th><?php echo $this->Paginator->sort('Title');?></th>

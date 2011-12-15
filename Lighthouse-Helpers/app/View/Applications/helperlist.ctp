@@ -72,6 +72,7 @@
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
 		<li><?php echo $this->Html->link(__('Helper Summary'), array('action' => 'index')); ?></li>
+		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>
 </div>
 

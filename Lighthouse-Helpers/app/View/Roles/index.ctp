@@ -1,6 +1,6 @@
 <div class="roles index">
 	<h2><?php echo __('Roles');?></h2>
-	<table cellpadding="0" cellspacing="0">
+	<table>
 	<tr>
 			<th><?php echo $this->Paginator->sort('Role_ID');?></th>
 			<th><?php echo $this->Paginator->sort('RoleName');?></th>

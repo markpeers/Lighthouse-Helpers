@@ -27,7 +27,7 @@ class ApplicationsController extends AppController {
 		 
 		 
 		if ($this->Session->check('Filter.Years') == false) {
-			debug('Filter.years not set');
+			//debug('Filter.years not set');
 			$sql = 'SELECT DISTINCT (`Application`.`Year`) AS lhyear ';
 			$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
 			$sql = $sql . 'WHERE `Application`.`Year` > 2000 ';
