@@ -45,4 +45,57 @@ class AppController extends Controller {
     function beforeFilter() {
         $this->Auth->allow('display');
     }
+    
+    function getsessiondata() {
+    	//a helper function to check for information in the session
+    	//if there is none then sensible default is added
+    	//session data is returned in $data
+    		
+    		
+    	if ($this->Session->check('Filter.Years') == false) {
+    		//debug('Filter.years not set');
+    		$sql = 'SELECT DISTINCT (`Application`.`Year`) AS lhyear ';
+    		$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
+    		$sql = $sql . 'WHERE `Application`.`Year` > 2000 ';
+    		$sql = $sql . 'ORDER BY `Application`.`Year` DESC ';
+    
+    		$lhyearsobj = $this->Application->query($sql);
+    
+    		foreach ($lhyearsobj as $lhyearobj):
+    		$lhyears[$lhyearobj['Application']['lhyear']] = $lhyearobj['Application']['lhyear'];
+    		//debug($lhyearobj['Application']['lhyear']);
+    		endforeach;
+    		$this->Session->write('Filter.Years', $lhyears);
+    		//print_r($lhyearsobj);
+    		$this->Session->write('Filter.Year', $lhyearsobj[0]['Application']['lhyear']);
+    		//debug('Years in session ');
+    		//print_r($lhyears);
+    	}
+    	else {
+    		//debug('Filter.years is setxxx');
+    	}
+    	//print_r($this->Session->read('Filter.Years'));
+    	//print_r($this->Session->read('Filter.Year'));
+    
+    
+    	if ($this->Session->check('Filter.Year')) {
+    		$lhyear = $this->Session->read('Filter.Year');
+    		//debug('Year in session '.$lhyear);
+    	}
+    	else {
+    		$lhyearsobj = $this->Session->read('Filter.Years');
+    
+    		$lhyear = $lhyearsobj[0]['Application']['lhyear'];
+    		//debug('No Year in session');
+    		$this->Session->write('Filter.Year', $lhyear);
+    	}
+    		
+    	$data = array(	'lhyear' => $lhyear,
+        					'lhyears' => $this->Session->read('Filter.Years')
+    	);
+    		
+    	return $data;
+    }
+    
+    
 }

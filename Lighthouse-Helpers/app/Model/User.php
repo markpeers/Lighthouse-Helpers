@@ -3,6 +3,7 @@
 App::uses('AuthComponent', 'Controller/Component');
 class User extends AppModel {
     public $name = 'User';
+    public $tablePrefix = 'temp_';
     
     public function beforeSave() {
     	if (isset($this->data[$this->alias]['password'])) {

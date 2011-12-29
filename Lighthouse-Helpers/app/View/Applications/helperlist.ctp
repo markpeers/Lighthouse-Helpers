@@ -53,7 +53,7 @@
 </div>
 </div>
 
-<div class="filter actions">
+<div class="actions">
 	<h3>Filters</h3>
 	<?php echo $this->Form->create('Filter');?>
 	<table>
@@ -66,9 +66,15 @@
 		</tr>
 	</table>
 	<?php echo $this->Form->end('Update filter');?>
-</div>
-
-<div class="actions">
+	
+	<h3>Helper Search</h3>	
+    <?php echo $this->Form->create('Person',array('action'=>'search'));?>
+    <?php
+        echo $this->Form->input('helpername',array('type'=>'text','id'=>'helpername','label'=>' '));
+        echo $this->Form->input('id',array('type'=>'hidden'));
+    ?>
+    <?php echo $this->Form->end(__('Show Helper', true));?>
+	    
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
 		<li><?php echo $this->Html->link(__('Helper Summary'), array('action' => 'index')); ?></li>

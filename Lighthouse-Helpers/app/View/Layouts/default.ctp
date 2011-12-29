@@ -30,6 +30,18 @@ $cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 					}
 				}
 			});
+			
+		});
+	</script>
+	<script>
+		$(function() {
+			$( "#helpername" ).autocomplete({
+				source: '/people/search',
+				minLength: 2,
+				select: function( event, ui ) {
+					$( "#PersonId" ).val( ui.item.id );
+				}
+			});
 		});
 	</script>
 
@@ -42,7 +54,7 @@ $cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 		<div id="content">
 
 			<?php echo $this->Session->flash(); ?>
-
+						
 			<?php echo $content_for_layout; ?>
 
 		</div>
