@@ -1,5 +1,6 @@
 <!-- File: /app/View/Applications/index.ctp -->
 <!-- <?php //debug($lighthouseyears); ?> -->
+<?php echo $this->element('menu1'); ?>
 <h2>Helper Summary <?php echo $this->Session->read('Filter.Year')?></h2>
 <table>
 	<tr>

@@ -1,0 +1,146 @@
+/*See http://www.ahmadhania.com/2011/06/dark-menu-pure-css3-two-level-menu-tutorial.html forinfo */
+
+/* Main Dark Menu Unordered List First Level Style */
+ul.dark_menu {
+    list-style: none;
+    padding: 5px;
+    font-family: Arial;
+    font-size: 14px;
+    line-height: 14px;
+    background-color: rgba(128,128,128,0.5); 
+
+    /* Border Radius */
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
+/* Clears all floated List Items */
+ul.dark_menu:after {
+    content: " ";
+    clear: both;
+    display: block;
+    overflow: hidden;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+}
+
+    /* First Level List Items Style */
+    ul.dark_menu li {
+        float: left;
+        margin: 0 0 0 5px;
+        position: relative;
+    }
+
+    /* First List Item in First Level Style */
+    ul.dark_menu li:first-child {
+       margin: 0px; 
+    }
+    
+/* List Items Links Style */
+ul.dark_menu li a, ul.dark_menu li a:link {
+    color: #73635e;
+    text-decoration: none;
+    display: block;
+    padding: 5px 10px;
+
+    /* Background */
+    background: blue;
+
+    /* Border Radius */
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+
+    /* Transition Effect */
+    -webkit-transition: all 1s ease;
+	-moz-transition: all 1s ease;
+	-o-transition: all 1s ease;
+	-ms-transition: all 1s ease;
+	transition: all 1s ease;
+
+}
+
+/* List Items Links Hover State Style */
+ul.dark_menu li a:hover {
+    color: white;
+
+    /* Gradient Background */
+    background: cyan; 
+
+    /* Transition Effect */
+    -webkit-transition: all 1s ease;
+	-moz-transition: all 1s ease;
+	-o-transition: all 1s ease;
+	-ms-transition: all 1s ease;
+	transition: all 1s ease;
+}
+
+/* List Items Links Active and Selected State Style */
+ul.dark_menu li a.selected, ul.dark_menu li a:active {
+    color: white;
+    background: green;
+
+    /* Transition Effect */
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+    transition: all 1s ease;
+}
+
+/* Sub Menu Unordered List Second Level Style */
+ul.dark_menu li ul {
+    display: none;
+}
+
+/* Sub Menu Unordered List Second Level Style
+    When Parent List Item is Hovered */
+ul.dark_menu li:hover ul {
+    position: absolute;
+    display: block;
+    z-index: 1000;
+    left: 0px;
+    top: 29px;
+    padding: 5px 0;
+    list-style: none;
+    background-color: rgba(128,128,128,0.5); 
+
+    /* Border Radius */
+    -webkit-border-radius: 0px 0px 20px 20px;
+    -moz-border-radius: 0px 0px 20px 20px;
+    border-radius: 0px 0px 20px 20px;
+      
+}
+
+/* Before Second Level Unordered List Style */
+ul.dark_menu li ul:before {
+    content: " ";
+    position: absolute;
+    display: block;
+    z-index: 1500;
+    left: 0px;
+    top: -10px;
+    height: 10px;
+    width: 100%;
+}
+
+/* Second Level Menu List Items Style */
+ul.dark_menu li ul li {
+    float: none;
+    margin: 5px 10px;
+/*    border-bottom: 1px solid green;
+    border-top: 1px solid yellow; */
+}
+
+/* First List Item in Second Level Menu Style */
+ul.dark_menu li ul li:first-child {
+    margin: 0px 10px;
+    border-top: 0 none;
+}
+
+/* Last List Item in Second Level Menu Style */
+ul.dark_menu li ul li:last-child {
+    border-bottom: 0 none;
+}

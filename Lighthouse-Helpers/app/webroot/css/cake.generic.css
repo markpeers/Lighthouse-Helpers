@@ -98,12 +98,15 @@ p {
 	background: #003d4c;
 	text-decoration: underline;
 }
-#content{
+#content {
 	background: #fff;
 	clear: both;
 	color: #333;
 	padding: 10px 20px 40px 20px;
 	overflow: auto;
+}
+#menu {
+	clear: both;
 }
 #footer {
 	clear: both;
@@ -313,7 +316,7 @@ label {
 }
 input, textarea {
 	clear: both;
-	font-size: 140%;
+	font-size: 100%;
 	font-family: "frutiger linotype", "lucida grande", "verdana", sans-serif;
 	padding: 1%;
 	width:98%;
