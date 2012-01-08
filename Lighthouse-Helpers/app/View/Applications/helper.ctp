@@ -143,19 +143,27 @@
 		</div>
 		<div id="tabs-4">
 			<table>
-				<tr><th>Role</th><th>Sessions</th></tr>
+				<tr><th>Role</th><th>Sessions</th><th class="actions"><?php echo __('Actions');?></th></tr>
 			<?php foreach ($data['OfferedRole'] as $offeredrole): ?>
 				<tr><td><?php echo $offeredrole['Role']['RoleName'];?></td>
 					<td><?php foreach ($offeredrole['OfferedSession'] as $lhsession) {
 						echo $lhsession['Session']['Description'].', ';
 					}?></td>
+					<td class="actions">
+						<?php echo $this->Html->link('Accept', array('action' => 'acceptofferedrole', $offeredrole['Role_Offered_ID']), 
+														null,
+						 								__('Are you sure you want to accept the role "%s" for %s %s?',
+															$offeredrole['Role']['RoleName'], 
+															$data['Person']['Nickname'], 
+															$data['Person']['Last_Name'])); ?>
+					</td>
 				</tr>
 			<?php endforeach; ?>
 			</table>
 		</div>
 		<div id="tabs-5">
 			<table>
-				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th></tr>
+				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th><th class="actions"><?php echo __('Actions');?></th></tr>
 			<?php foreach ($data['AssignedRole'] as $assignedrole): ?>
 				<tr><td><?php echo $assignedrole['Role']['RoleName'];?></td>
 					<td><?php foreach ($assignedrole['AssignedSession'] as $lhsession) {
@@ -172,6 +180,13 @@
 								else {
 									echo 'Yes';
 								}?></td>
+					<td class="actions">
+						<button id="ajaxtest">Ajax Test</button>
+						<?php echo $this->Js->link('Test 2', array('action' => 'test', 'page' => 2), array('update' => '#tabs-5'));?>
+						<?php //echo $this->Html->link(__('Edit'), array('action' => 'edit', $assignedrole['Role_Assigned_ID'])); ?>
+						<?php //echo $this->Form->postLink(__('Delete'), array('action' => 'delete', $assignedrole['Role_Assigned_ID']), null, __('Are you sure you want to delete # %s?', $assignedrole['Role_Assigned_ID'])); ?>
+					</td>
+					
 				</tr>
 			<?php endforeach; ?>
 			</table>
@@ -304,7 +319,17 @@
 		</div>
 		<div id="tabs-12">
 			<table>
-				<tr><td><?php echo $data['Application']['Notes'];?> </td></tr>
+				<tr><th>Notes</th><th class="actions">Actions</th></tr>
+				<tr>
+					<td><?php echo $data['Application']['Notes'];?> </td>
+					<td class="actions">
+						<?php echo $this->Js->link('Edit', 
+													array('action' => 'editnotes', $data['Application']['Application_ID']), 
+													array('update' => '#tabs-12',
+															'data' => array('step'=>'edit')
+															));?>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<div id="tabs-13">
@@ -361,13 +386,11 @@
 </div>
 
 <div class="actions">
-	<h3>
-
-
-
-	<?php echo __('Actions'); ?></h3>
+	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
 		<li><?php echo $this->Html->link(__('List Helpers'), array('action' => 'helperlist')); ?></li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>
 </div>
+
+<?php echo $this->Html->script('ajaxscript'); // script for ajax call?>

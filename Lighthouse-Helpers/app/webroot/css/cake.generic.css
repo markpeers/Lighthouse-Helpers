@@ -173,7 +173,8 @@ td.actions {
 	text-align: center;
 	white-space: nowrap;
 }
-table td.actions a {
+table td.actions a,
+table td.actions button {
 	margin: 0px 6px;
 	padding:2px 5px;
 }
@@ -511,6 +512,7 @@ p.error em {
 /* Buttons and button links */
 input[type=submit],
 .actions ul li a,
+.actions button,
 .actions a {
 	font-weight:normal;
 	padding: 4px 8px;
@@ -536,6 +538,7 @@ input[type=submit],
 	user-select: none;
 }
 .actions ul li a:hover,
+.actions button:hover,
 .actions a:hover {
 	background: #ededed;
 	border-color: #acacac;
@@ -543,6 +546,7 @@ input[type=submit],
 }
 input[type=submit]:active,
 .actions ul li a:active,
+.actions button:active,
 .actions a:active {
 	background: #eee;
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#eee));

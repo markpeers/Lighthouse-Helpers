@@ -420,19 +420,63 @@ class ApplicationsController extends AppController {
     
 	public function test($id = null) {
 		
-		$this->Person->contain('Reference',
-								'Reference.year = 2011',
-								'Reference.Referee');
-			
-		$data = $this->Person->find('first',
-			array('fields' => array('Person.Person_ID'),
-				'conditions' => array('Person.Person_ID' => $id),
-		));
-		
-		debug($data);
+		if ($this->request->is('ajax')) {
+			$this->log($this->request, 'debug');
+			$this->render('test', 'ajax');
+			//$tab = $this->request->params;
+		}else{
+			print_r($this->referer());
+			$this->redirect($this->referer());
+		}
+	}
+	
+	public function editnotes($id=null) {
+		$this->Application->id = $id;
+		$this->log($this->data,'debug');
+		if ($this->request->is('ajax')) {
+			$this->log($this->request, 'debug');
+			switch ($this->request->query['step']) {
+				case 'edit':
+					$data = $this->Application->find('first',
+						array('fields' => array('Application.Notes'),
+							'conditions' => array('Application.Application_ID' => $id),
+							'recursive' => 0
+						));
+					$this->set('data', $data);
+					$this->render('ajaxeditnotes', 'ajax');
+					break;
+				case 'update':
+					;
+					break;
+				case 'cancel':
+					$data = $this->Application->find('first',
+						array('fields' => array('Application.Notes'),
+							'conditions' => array('Application.Application_ID' => $id),
+							'recursive' => 0
+						));
+					$this->set('data', $data);
+					$this->render('ajaxnotes', 'ajax');
+					break;
+							
+				default:
+					;
+				break;
+			}
+		}
 	}
 
-	 
+	public function savenotes($id=null) {
+		$this->Application->id = $id;
+		if ($this->request->is('ajax')) {
+			$this->log($this->request, 'debug');
+//			$this->set('data', $data);
+			$this->render('ajaxnotes', 'ajax');
+		}else{
+			$this->redirect($this->referer());
+		}
+	}
+	
+	
 	 
 	function clearsession() {
 		$this->Session->delete('Filter');

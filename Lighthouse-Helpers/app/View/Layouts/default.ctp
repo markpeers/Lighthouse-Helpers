@@ -18,33 +18,10 @@ $cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 		
 		echo $this->Html->script('jquery-1.7.min'); // Include jQuery library
 		echo $this->Html->script('jquery-ui-1.8.16.custom.min'); // Include jQuery-UI library
-
+//		echo $this->Html->script('ajaxscript'); // script for ajax call
+		
 		echo $scripts_for_layout;
 	?>
-	<script>
-		$(function() {
-			$( "#tabs" ).tabs({
-				ajaxOptions: {
-					error: function( xhr, status, index, anchor ) {
-						$( anchor.hash ).html(
-							"Couldn't load this tab. We'll try to fix this as soon as possible. ");
-					}
-				}
-			});
-			
-		});
-	</script>
-	<script>
-		$(function() {
-			$( "#helpername" ).autocomplete({
-				source: '/people/search',
-				minLength: 2,
-				select: function( event, ui ) {
-					$( "#PersonId" ).val( ui.item.id );
-				}
-			});
-		});
-	</script>
 
 </head>
 <body>
