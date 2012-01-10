@@ -88,7 +88,8 @@ class ClassRegistry {
  *  stored in the registry and returned.
  * @param boolean $strict if set to true it will return false if the class was not found instead
  *	of trying to create an AppModel
- * @return object instance of ClassName
+ * @return object instance of ClassName.
+ * @throws CakeException when you try to construct an interface or abstract class.
  */
 	public static function init($class, $strict = false) {
 		$_this = ClassRegistry::getInstance();
@@ -132,13 +133,17 @@ class ClassRegistry {
 				App::uses($plugin . 'AppModel', $pluginPath . 'Model');
 				App::uses($class, $pluginPath . 'Model');
 
-				if (class_exists($class)) {
-					${$class} = new $class($settings);
+				if (class_exists($class) || interface_exists($class)) {
+					$reflection = new ReflectionClass($class);
+					if ($reflection->isAbstract() || $reflection->isInterface()) {
+						throw new CakeException(__d('cake_dev', 'Cannot create instance of %s, as it is abstract or is an interface', $class));
+					}
+					$instance = $reflection->newInstance($settings);
 					if ($strict) {
-						${$class} = (${$class} instanceof Model) ? ${$class} : null;
+						$instance = ($instance instanceof Model) ? $instance : null;
 					}
 				}
-				if (!isset(${$class})) {
+				if (!isset($instance)) {
 					if ($strict) {
 						return false;
 					} elseif ($plugin && class_exists($plugin . 'AppModel')) {
@@ -148,10 +153,10 @@ class ClassRegistry {
 					}
 					if (!empty($appModel)) {
 						$settings['name'] = $class;
-						${$class} = new $appModel($settings);
+						$instance = new $appModel($settings);
 					}
 
-					if (!isset(${$class})) {
+					if (!isset($instance)) {
 						trigger_error(__d('cake_dev', '(ClassRegistry::init() could not create instance of %1$s class %2$s ', $class, $type), E_USER_WARNING);
 						return $false;
 					}
@@ -166,7 +171,7 @@ class ClassRegistry {
 		if ($count > 1) {
 			return $true;
 		}
-		return ${$class};
+		return $instance;
 	}
 
 /**

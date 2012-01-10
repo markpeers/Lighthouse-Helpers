@@ -158,10 +158,10 @@ class CakeSession {
 			return;
 		}
 		if (strpos($base, 'index.php') !== false) {
-		   $base = str_replace('index.php', '', $base);
+			 $base = str_replace('index.php', '', $base);
 		}
 		if (strpos($base, '?') !== false) {
-		   $base = str_replace('?', '', $base);
+			 $base = str_replace('?', '', $base);
 		}
 		self::$path = $base;
 	}
@@ -539,8 +539,7 @@ class CakeSession {
 				'cookieTimeout' => 240,
 				'ini' => array(
 					'session.use_trans_sid' => 0,
-					'session.cookie_path' => self::$path,
-					'session.save_handler' => 'files'
+					'session.cookie_path' => self::$path
 				)
 			),
 			'cake' => array(

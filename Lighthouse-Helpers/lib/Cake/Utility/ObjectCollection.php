@@ -10,6 +10,7 @@
  * @link          http://cakephp.org CakePHP(tm) Project
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
+
 /**
  * Deals with Collections of objects.  Keeping registries of those objects,
  * loading and constructing new objects and triggering callbacks. Each subclass needs
@@ -42,7 +43,7 @@ abstract class ObjectCollection {
 /**
  * Loads a new object onto the collection. Can throw a variety of exceptions
  *
- * Implementations of this class support a `$options['callbacks']` flag which enables/disables
+ * Implementations of this class support a `$options['enabled']` flag which enables/disables
  * a loaded object.
  *
  * @param string $name Name of object to load.
@@ -68,9 +69,6 @@ abstract class ObjectCollection {
  * - `collectReturn` Set to true to collect the return of each object into an array.
  *    This array of return values will be returned from the trigger() call. Defaults to `false`.
  *
- * - `triggerDisabled` Will trigger the callback on all objects in the collection even the non-enabled
- *    objects. Defaults to false.
- *
  * - `modParams` Allows each object the callback gets called on to modify the parameters to the next object.
  *    Setting modParams to an integer value will allow you to modify the parameter with that index.
  *    Any non-null value will modify the parameter index indicated.
@@ -93,16 +91,12 @@ abstract class ObjectCollection {
 				'break' => false,
 				'breakOn' => false,
 				'collectReturn' => false,
-				'triggerDisabled' => false,
 				'modParams' => false
 			),
 			$options
 		);
 		$collected = array();
 		$list = $this->_enabled;
-		if ($options['triggerDisabled'] === true) {
-			$list = array_keys($this->_loaded);
-		}
 		if ($options['modParams'] !== false && !isset($params[$options['modParams']])) {
 			throw new CakeException(__d('cake_dev', 'Cannot use modParams with indexes that do not exist.'));
 		}

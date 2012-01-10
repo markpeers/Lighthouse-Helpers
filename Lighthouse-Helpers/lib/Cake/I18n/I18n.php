@@ -39,9 +39,9 @@ if (function_exists('mb_internal_encoding')) {
 class I18n {
 
 /**
- * Instance of the I10n class for localization
+ * Instance of the L10n class for localization
  *
- * @var I10n
+ * @var L10n
  */
 	public $l10n = null;
 
@@ -92,6 +92,15 @@ class I18n {
 	);
 
 /**
+ * Constructor, use I18n::getInstance() to get the i18n translation object.
+ *
+ * @return void
+ */
+	public function __construct() {
+		$this->l10n = new L10n();
+	}
+
+/**
  * Return a static instance of the I18n class
  *
  * @return I18n
@@ -100,7 +109,6 @@ class I18n {
 		static $instance = array();
 		if (!$instance) {
 			$instance[0] = new I18n();
-			$instance[0]->l10n = new L10n();
 		}
 		return $instance[0];
 	}
@@ -156,7 +164,7 @@ class I18n {
 		}
 
 		if ($_this->category == 'LC_TIME') {
-			return $_this->_translateTime($singular,$domain);
+			return $_this->_translateTime($singular, $domain);
 		}
 
 		if (!isset($count)) {
@@ -177,6 +185,18 @@ class I18n {
 				if (is_array($trans)) {
 					if (isset($trans[$plurals])) {
 						$trans = $trans[$plurals];
+					} else {
+						trigger_error(
+							__d('cake_dev',
+								'Missing plural form translation for "%s" in "%s" domain, "%s" locale. ' .
+								' Check your po file for correct plurals and valid Plural-Forms header.',
+								$singular,
+								$domain,
+								$_this->_lang
+							),
+							E_USER_WARNING
+						);
+						$trans = $trans[0];
 					}
 				}
 				if (strlen($trans)) {
@@ -458,7 +478,7 @@ class I18n {
 		} while (!feof($file));
 		fclose($file);
 		$merge[""] = $header;
-		return $this->_domains[$domain][$this->_lang][$this->category] = array_merge($merge ,$translations);
+		return $this->_domains[$domain][$this->_lang][$this->category] = array_merge($merge, $translations);
 	}
 
 /**
@@ -478,7 +498,7 @@ class I18n {
 			if (empty($line) || $line[0] === $comment) {
 				continue;
 			}
-			$parts = preg_split("/[[:space:]]+/",$line);
+			$parts = preg_split("/[[:space:]]+/", $line);
 			if ($parts[0] === 'comment_char') {
 				$comment = $parts[1];
 				continue;
@@ -503,7 +523,7 @@ class I18n {
 				continue;
 			}
 
-			$mustEscape = array($escape . ',' , $escape . ';', $escape . '<', $escape . '>', $escape . $escape);
+			$mustEscape = array($escape . ',', $escape . ';', $escape . '<', $escape . '>', $escape . $escape);
 			$replacements = array_map('crc32', $mustEscape);
 			$value = str_replace($mustEscape, $replacements, $value);
 			$value = explode(';', $value);

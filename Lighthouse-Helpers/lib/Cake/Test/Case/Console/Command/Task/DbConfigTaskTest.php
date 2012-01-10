@@ -31,7 +31,7 @@ App::uses('DbConfigTask', 'Console/Command/Task');
 class DbConfigTaskTest extends CakeTestCase {
 
 /**
- * setup method
+ * setUp method
  *
  * @return void
  */
@@ -115,7 +115,7 @@ class DbConfigTaskTest extends CakeTestCase {
 			->with(array(
 				array(
 					'name' => 'default',
-					'driver' => 'mysql',
+					'datasource' => 'mysql',
 					'persistent' => 'false',
 					'host' => 'localhost',
 					'login' => 'root',

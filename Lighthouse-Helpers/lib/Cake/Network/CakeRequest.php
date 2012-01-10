@@ -184,7 +184,7 @@ class CakeRequest implements ArrayAccess {
 			$query = $_GET;
 		}
 
-		unset($query['/' . $this->url]);
+		unset($query['/' . str_replace('.', '_', $this->url)]);
 		if (strpos($this->url, '?') !== false) {
 			list(, $querystr) = explode('?', $this->url);
 			parse_str($querystr, $queryArgs);
@@ -222,7 +222,7 @@ class CakeRequest implements ArrayAccess {
 			$uri = substr($uri, strlen($base));
 		}
 		if (strpos($uri, '?') !== false) {
-			$uri = parse_url($uri, PHP_URL_PATH);
+			list($uri) = explode('?', $uri, 2);
 		}
 		if (empty($uri) || $uri == '/' || $uri == '//') {
 			return '/';
@@ -278,10 +278,10 @@ class CakeRequest implements ArrayAccess {
 		$docRootContainsWebroot = strpos($docRoot, $dir . '/' . $webroot);
 
 		if (!empty($base) || !$docRootContainsWebroot) {
-			if (strpos($this->webroot, $dir) === false) {
+			if (strpos($this->webroot, '/' . $dir . '/') === false) {
 				$this->webroot .= $dir . '/' ;
 			}
-			if (strpos($this->webroot, $webroot) === false) {
+			if (strpos($this->webroot, '/' . $webroot . '/') === false) {
 				$this->webroot .= $webroot . '/';
 			}
 		}
@@ -414,6 +414,17 @@ class CakeRequest implements ArrayAccess {
 	}
 
 /**
+ * Magic isset method allows isset/empty checks
+ * on routing parameters.
+ *
+ * @param string $name The property being accessed.
+ * @return bool Existence
+ */
+	public function __isset($name) {
+		return isset($this->params[$name]);
+	}
+
+/**
  * Check whether or not a Request is a certain type.  Uses the built in detection rules
  * as well as additional rules defined with CakeRequest::addDetector().  Any detector can be called
  * as `is($type)` or `is$Type()`.
@@ -472,7 +483,7 @@ class CakeRequest implements ArrayAccess {
  * ### Callback detectors
  *
  * Callback detectors allow you to provide a 'callback' type to handle the check.  The callback will
- * recieve the request object as its only parameter.
+ * receive the request object as its only parameter.
  *
  * e.g `addDetector('custom', array('callback' => array('SomeClass', 'somemethod')));`
  *

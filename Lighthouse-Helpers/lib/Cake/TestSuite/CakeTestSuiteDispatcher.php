@@ -45,6 +45,7 @@ class CakeTestSuiteDispatcher {
 		'filter' => false,
 		'fixture' => null
 	);
+
 /**
  * Baseurl for the request
  *
@@ -151,9 +152,6 @@ class CakeTestSuiteDispatcher {
 				$found = include 'PHPUnit' . DS . 'Autoload.php';
 			}
 		}
-		if ($found) {
-			PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'DEFAULT');
-		}
 		return $found;
 	}
 
@@ -231,7 +229,7 @@ class CakeTestSuiteDispatcher {
 	function _runTestCase() {
 		$commandArgs = array(
 			'case' => $this->params['case'],
-			'core' =>$this->params['core'],
+			'core' => $this->params['core'],
 			'app' => $this->params['app'],
 			'plugin' => $this->params['plugin'],
 			'codeCoverage' => $this->params['codeCoverage'],

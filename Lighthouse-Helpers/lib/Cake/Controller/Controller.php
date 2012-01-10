@@ -805,6 +805,7 @@ class Controller extends Object {
  */
 	public function setAction($action) {
 		$this->request->action = $action;
+		$this->view = $action;
 		$args = func_get_args();
 		unset($args[0]);
 		return call_user_func_array(array(&$this, $action), $args);
@@ -980,7 +981,7 @@ class Controller extends Object {
 		$arrayOp = is_array($op);
 		foreach ($data as $model => $fields) {
 			foreach ($fields as $field => $value) {
-				$key = $model.'.'.$field;
+				$key = $model . '.' . $field;
 				$fieldOp = $op;
 				if ($arrayOp) {
 					if (array_key_exists($key, $op)) {
@@ -997,9 +998,9 @@ class Controller extends Object {
 				$fieldOp = strtoupper(trim($fieldOp));
 				if ($fieldOp === 'LIKE') {
 					$key = $key.' LIKE';
-					$value = '%'.$value.'%';
+					$value = '%' . $value . '%';
 				} elseif ($fieldOp && $fieldOp != '=') {
-					$key = $key.' '.$fieldOp;
+					$key = $key.' ' . $fieldOp;
 				}
 				$cond[$key] = $value;
 			}

@@ -349,18 +349,29 @@ class CakeResponse {
 		$codeMessage = $this->_statusCodes[$this->_status];
 		$this->_sendHeader("{$this->_protocol} {$this->_status} {$codeMessage}");
 		$this->_sendHeader('Content-Type', "{$this->_contentType}; charset={$this->_charset}");
-		$shouldSetLength = empty($this->_headers['Content-Length']) && !in_array($this->_status, range(301, 307));
-		if ($shouldSetLength && !$this->outputCompressed()) {
-			if (ini_get('mbstring.func_overload') & 2 && function_exists('mb_strlen')) {
-				$this->_headers['Content-Length'] = mb_strlen($this->_body, '8bit');
-			} else {
-				$this->_headers['Content-Length'] = strlen($this->_body);
-			}
-		}
+		$this->_setContentLength();
 		foreach ($this->_headers as $header => $value) {
 			$this->_sendHeader($header, $value);
 		}
 		$this->_sendContent($this->_body);
+	}
+
+/**
+ * Calculates the correct Content-Length and sets it as a header in the response
+ * Will not set the value if already set or if the output is compressed.
+ *
+ * @return void
+ */
+	protected function _setContentLength() {
+		$shouldSetLength = empty($this->_headers['Content-Length']) && !in_array($this->_status, range(301, 307));
+		if ($shouldSetLength && !$this->outputCompressed()) {
+			$offset = ob_get_level() ? ob_get_length() : 0;
+			if (ini_get('mbstring.func_overload') & 2 && function_exists('mb_strlen')) {
+				$this->_headers['Content-Length'] = $offset + mb_strlen($this->_body, '8bit');
+			} else {
+				$this->_headers['Content-Length'] = $offset + strlen($this->_body);
+			}
+		}
 	}
 
 /**
@@ -412,7 +423,7 @@ class CakeResponse {
  * will have the same effect as only doing `header('WWW-Authenticate: Not-Negotiate');`
  *
  * @param mixed $header. An array of header strings or a single header string
- *	- an assotiative array of "header name" => "header value" is also accepted
+ *	- an associative array of "header name" => "header value" is also accepted
  *	- an array of string headers is also accepted
  * @param mixed $value. The header value.
  * @return array list of headers to be sent
@@ -658,11 +669,12 @@ class CakeResponse {
  * @return boolean
  */
 	public function outputCompressed() {
-		return ini_get("zlib.output_compression") === '1' || in_array('ob_gzhandler', ob_list_handlers());
+		return strpos(env('HTTP_ACCEPT_ENCODING'), 'gzip') !== false
+			&& (ini_get("zlib.output_compression") === '1' || in_array('ob_gzhandler', ob_list_handlers()));
 	}
 
 /**
- * Sets the correct headers to instruct the browser to dowload the response as a file.
+ * Sets the correct headers to instruct the browser to download the response as a file.
  *
  * @param string $filename the name of the file as the browser will download the response
  * @return void
