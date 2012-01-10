@@ -239,184 +239,72 @@ class ApplicationsController extends AppController {
 	}
 
 	public function helper($application_id = null, $person_id = null, $year = null) {
-		//debug('Test');
-		if ($this->request->is('ajax')) {
-			//debug($this->request);
-			$tab = $this->request->params['pass']['2'];
-			switch ($tab) {
-				case 'ajaxtest':
-					$data = array('tab' => $tab);
-					break;
-
-				case 'ajaxconfidential':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Conviction',
-											'Application.Caution',
-											'Application.Court',
-											'Application.Conduct',
-											'Application.Childprotection',
-											'Application.Healthproblems',
-											'Application.Othername',
-											'Application.Otheraddress',
-											'Application.Conviction_details',
-											'Application.Caution_details',
-											'Application.Court_details',
-											'Application.Conduct_details',
-											'Application.Childprotection_details',
-											'Application.Healthproblems_details',
-											'Application.Othername_details',
-											'Application.Otheraddress_details'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxconfirmation':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Confirmation_email_sent',
-											'Application.Confirmation_email_date'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxnotes':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Notes'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxemergencycontact':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Emergency_contact',
-											'Application.Emergency_phone1',
-											'Application.Emergency_phone2',
-											'Application.Emergency_relationship'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxlhaddress':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.LH_Address_1',
-											'Application.LH_Address_2',
-											'Application.LH_Town',
-											'Application.LH_County',
-											'Application.LH_Post_Code',
-											'Application.LH_Telephone'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxcrb':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.CRB',
-											'Application.CRB_type',
-											'Application.CRB_date',
-											'Application.CRB_number',
-											'Application.CRB_note'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxdeclaration':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Parental_consent',
-											'Application.Declaration_signed',
-											'Application.Signature'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxhealth':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Medical',
-											'Application.Medical_note'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxexperience':
-					$data = $this->Application->find('first',
-					array('fields' => array('Application.Previous_experience',
-											'Application.Experience_notes',
-											'Application.Special_needs',
-											'Application.Language',
-											'Application.First_aid_cert',
-											'Application.Helped_before'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-					));
-					break;
-
-				case 'ajaxroleassigned';
-				$this->Application->contain(array('AssignedRole',
-													'AssignedRole.Role',
-													'AssignedRole.AssignedSession',
-													'AssignedRole.AssignedSession.Session'));
-				$data = $this->Application->find('first',
-					array('fields' => array('Application.Application_ID'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-				));
-
-				break;
-
-				case 'ajaxhelpoffered';
-				$this->Application->contain(array('OfferedRole',
-													'OfferedRole.Role',
-													'OfferedRole.OfferedSession',
-													'OfferedRole.OfferedSession.Session'));
-				$data = $this->Application->find('first',
-					array('fields' => array('Application.Application_ID'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-				));
-				
-				break;
-				
-				case 'ajaxreferees';
-				$this->Application->contain(array('People',
-													'RefereeTemp'
-													));
-				$data = $this->Application->find('first',
-					array('fields' => array('Application.Application_ID'),
-						'conditions' => array('Application.Application_ID' => $application_id)
-				));
-
-				break;
-
-				default:
-					;
-					break;
-			}
-				
-			$this->set('data', $data);
-			$this->render($tab, 'ajax');
+		if ($year==null) {
+			$sessiondata = $this->getsessiondata();
+			$year = $sessiondata['lhyear'];
 		}
-		else {
-			$this->Application->contain(array('Person',
-											'Person.Church',
-											'Person.RefereeTemp',
-											'Person.RefereeTemp.year = '.$year,
-											'Person.Reference',
-											'Person.Reference.Referee',
-											'Person.Reference.year = '.$year,
-											'OfferedRole',
-											'OfferedRole.Role',
-											'OfferedRole.OfferedSession',
-											'OfferedRole.OfferedSession.Session',
-											'AssignedRole',
-											'AssignedRole.Role',
-											'AssignedRole.AssignedSession',
-											'AssignedRole.AssignedSession.Session'));
-			$application = $this->Application->find('first',
- 				array('conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
-											'Application.Year' => $year )
-											));
+		//debug('Test');
+		$this->Application->contain(array('Person',
+										'Person.Church',
+										'Person.RefereeTemp',
+										'Person.RefereeTemp.year = '.$year,
+										'Person.Reference',
+										'Person.Reference.Referee',
+										'Person.Reference.year = '.$year,
+										'OfferedRole',
+										'OfferedRole.Role',
+										'OfferedRole.OfferedSession',
+										'OfferedRole.OfferedSession.Session',
+										'AssignedRole',
+										'AssignedRole.Role',
+										'AssignedRole.AssignedSession',
+										'AssignedRole.AssignedSession.Session'));
+		$application = $this->Application->find('first',
+ 		//		array('conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
+		//									'Application.Year' => $year )
+ 				array('conditions' => array('Application.Application_ID' => $application_id )
+		));
 			
 				
-			$this->set('data', $application);
-//			$this->set('data', array('Application' => $application));
-		}
+		$this->set('data', $application);
+		//$this->set('data', array('Application' => $application));
 	}
-
+	
+	public function edit($application_id = null, $person_id = null, $year = null) {
+		if ($year==null) {
+		$sessiondata = $this->getsessiondata();
+		$year = $sessiondata['lhyear'];
+		}
+		$this->Application->id = $application_id;
+	    if ($this->request->is('get')) {
+	    	//debug('this is a get');
+	    	$this->Application->contain(array('Person',
+	    											'Person.Church',
+	    											'Person.RefereeTemp',
+	    											'Person.RefereeTemp.year = '.$year,
+	    											'Person.Reference',
+	    											'Person.Reference.Referee',
+	    											'Person.Reference.year = '.$year,
+	    											'OfferedRole',
+	    											'OfferedRole.Role',
+	    											'OfferedRole.OfferedSession',
+	    											'OfferedRole.OfferedSession.Session',
+	    											'AssignedRole',
+	    											'AssignedRole.Role',
+	    											'AssignedRole.AssignedSession',
+	    											'AssignedRole.AssignedSession.Session'));
+	    	
+	        $this->request->data = $this->Application->read();
+	        //debug($this->request->data);
+	    } else {
+	        if ($this->Application->save($this->request->data)) {
+	            $this->Session->setFlash('Application '.$this->Application->id.' has been updated.');
+	            $this->redirect(array('action' => 'helper', $this->Application->id, $person_id, $year));
+	        } else {
+	            $this->Session->setFlash('Unable to update your post.');
+	        }
+	    }
+	}
     
 	public function test($id = null) {
 		
@@ -429,53 +317,6 @@ class ApplicationsController extends AppController {
 			$this->redirect($this->referer());
 		}
 	}
-	
-	public function editnotes($id=null) {
-		$this->Application->id = $id;
-		$this->log($this->data,'debug');
-		if ($this->request->is('ajax')) {
-			$this->log($this->request, 'debug');
-			switch ($this->request->query['step']) {
-				case 'edit':
-					$data = $this->Application->find('first',
-						array('fields' => array('Application.Notes'),
-							'conditions' => array('Application.Application_ID' => $id),
-							'recursive' => 0
-						));
-					$this->set('data', $data);
-					$this->render('ajaxeditnotes', 'ajax');
-					break;
-				case 'update':
-					;
-					break;
-				case 'cancel':
-					$data = $this->Application->find('first',
-						array('fields' => array('Application.Notes'),
-							'conditions' => array('Application.Application_ID' => $id),
-							'recursive' => 0
-						));
-					$this->set('data', $data);
-					$this->render('ajaxnotes', 'ajax');
-					break;
-							
-				default:
-					;
-				break;
-			}
-		}
-	}
-
-	public function savenotes($id=null) {
-		$this->Application->id = $id;
-		if ($this->request->is('ajax')) {
-			$this->log($this->request, 'debug');
-//			$this->set('data', $data);
-			$this->render('ajaxnotes', 'ajax');
-		}else{
-			$this->redirect($this->referer());
-		}
-	}
-	
 	
 	 
 	function clearsession() {
