@@ -18,28 +18,27 @@
 
 	<div id="tabs">
 		<ul>
-			<li><a href="#tabs-1">Helper</a></li>
-			<li><a href="#tabs-2">Referees Offered</a></li>
-			<li><a href="#tabs-3">References</a></li>
-			<li><a href="#tabs-4">Help Offered</a></li>
-			<li><a href="#tabs-5">Roles Assigned</a></li>
-			<li><a href="#tabs-6">Experience</a></li>
-			<li><a href="#tabs-7">Health</a></li>
-			<li><a href="#tabs-8">Declaration</a></li>
-			<li><a href="#tabs-9">CRB</a></li>
-			<li><a href="#tabs-10">LH Address</a></li>
-			<li><a href="#tabs-11">Emergency Contact</a></li>
-			<li><a href="#tabs-12">Notes</a></li>
-			<li><a href="#tabs-13">Confirmation</a></li>
-			<li><a href="#tabs-14">Confidential</a></li>
+			<li><a href="#tabs-helper">Helper</a></li>
+			<li><a href="#tabs-referees-offered">Referees Offered</a></li>
+			<li><a href="#tabs-references">References</a></li>
+			<li><a href="#tabs-help-offered">Help Offered</a></li>
+			<li><a href="#tabs-roles-assigned">Roles Assigned</a></li>
+			<li><a href="#tabs-experience">Experience</a></li>
+			<li><a href="#tabs-health">Health</a></li>
+			<li><a href="#tabs-declaration">Declaration</a></li>
+			<li><a href="#tabs-crb">CRB</a></li>
+			<li><a href="#tabs-lh-address">LH Address</a></li>
+			<li><a href="#tabs-emergency-contact">Emergency Contact</a></li>
+			<li><a href="#tabs-notes">Notes</a></li>
+			<li><a href="#tabs-confirmation">Confirmation</a></li>
+			<li><a href="#tabs-confidential">Confidential</a></li>
 		</ul>
-		<div id="tabs-1">
+		<div id="tabs-helper">
 			<table>
 				<tr>
 					<td>Address:</td>
 					<td><?php echo $data['Person']['Address_1'].'<br/>';
-					if(strlen($data['Person']['Address_2']) > 0)
-					echo  $data['Person']['Address_2'].'<br/>';
+					if(strlen($data['Person']['Address_2']) > 0) echo  $data['Person']['Address_2'].'<br/>';
 					echo $data['Person']['Town'].'<br/>'.
 					$data['Person']['County'].'<br/>'.
 					$data['Person']['Post_Code'];?>
@@ -69,7 +68,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="tabs-2">
+		<div id="tabs-referees-offered">
 			<table>
 				<tr><th>Referee 1</th><th>Referee 2</th></tr>
 				<tr>
@@ -86,7 +85,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="tabs-3">
+		<div id="tabs-references">
 			<table>
 				<tr><th>Referee</th><th>Reference Status</th><th>Reference Requested Date</th><th>Reference Received Date</th><th>Reference OK</th></tr>
 				
@@ -141,7 +140,7 @@
 				
 			</table>
 		</div>
-		<div id="tabs-4">
+		<div id="tabs-help-offered">
 			<table>
 				<tr><th>Role</th><th>Sessions</th></tr>
 			<?php foreach ($data['OfferedRole'] as $offeredrole): ?>
@@ -153,7 +152,7 @@
 			<?php endforeach; ?>
 			</table>
 		</div>
-		<div id="tabs-5">
+		<div id="tabs-roles-assigned">
 			<table>
 				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th></tr>
 			<?php foreach ($data['AssignedRole'] as $assignedrole): ?>
@@ -177,7 +176,7 @@
 			<?php endforeach; ?>
 			</table>
 		</div>
-		<div id="tabs-6">
+		<div id="tabs-experience">
 			<table>
 				<tr><td>Worked with children:</td><td><?php if($data['Application']['Previous_experience'] == 1) 
 																echo 'Yes'; 
@@ -203,7 +202,7 @@
 																echo 'No' ;?></td></tr>
 			</table>
 		</div>
-		<div id="tabs-7">
+		<div id="tabs-health">
 			<table>
 				<tr><td>Health Issues:</td><td><?php if($data['Application']['Medical'] == 0) 
 																echo 'None'; 
@@ -212,7 +211,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="tabs-8">
+		<div id="tabs-declaration">
 			<table>
 				<tr><td>Parental Consent:</td><td><?php switch ($data['Application']['Parental_consent']){
 														case 1:
@@ -235,7 +234,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="tabs-9">
+		<div id="tabs-crb">
 			<table>
 				<tr><td>CRB Disclosure:</td><td><?php switch ($data['Application']['CRB']){
 														case 1:
@@ -284,7 +283,7 @@
 				<tr><td>CRB Notes:</td><td><?php echo $data['Application']['CRB_note']; ?></td></tr>
 			</table>
 		</div>
-		<div id="tabs-10">
+		<div id="tabs-lh-address">
 			<table>
 				<tr><td>Address during Lighthouse:</td><td><?php echo $data['Application']['LH_Address_1'].'<br/>';
 												if(strlen($data['Application']['LH_Address_2']) > 0)
@@ -295,7 +294,7 @@
 				<tr><td>Telephone:</td><td><?php echo $data['Application']['LH_Telephone'];?></td></tr>
 			</table>
 		</div>
-		<div id="tabs-11">
+		<div id="tabs-emergency-contact">
 			<table>
 				<tr><td>Contact Name:</td><td><?php echo $data['Application']['Emergency_contact'];?></td></tr>
 				<tr><td>Telephone 1:</td><td><?php echo $data['Application']['Emergency_phone1'];?></td></tr>
@@ -303,7 +302,7 @@
 				<tr><td>Relationship:</td><td><?php echo $data['Application']['Emergency_relationship'];?></td></tr>
 			</table>
 		</div>
-		<div id="tabs-12">
+		<div id="tabs-notes">
 			<table>
 				<tr><th>Notes</th></tr>
 				<tr>
@@ -311,7 +310,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="tabs-13">
+		<div id="tabs-confirmation">
 			<table>
 				<tr>
 					<td>Confirmation e-mail sent:</td>
@@ -323,7 +322,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="tabs-14">
+		<div id="tabs-confidential">
 			<table>
 			<?php
 			if($data['Application']['Conviction'] <> 0)
