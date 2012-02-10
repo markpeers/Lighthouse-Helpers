@@ -1,10 +1,13 @@
 <!-- File: /app/View/Applications/index.ctp -->
-<!-- <?php //debug($lighthouseyears); ?> -->
-<?php echo $this->element('menu1'); ?>
+<?php //debug($summarys['NoRole']); ?>
+<?php //echo $this->element('menu1'); ?>
 <h2>Helper Summary <?php echo $this->Session->read('Filter.Year')?></h2>
 <table>
 	<tr>
 		<td>Total helpers: <?php echo $summarys['TotalHelpers']; ?></td>
+		<td>No Reference: <?php echo $summarys['ReferenceNeedsAttentionCount']?></td>
+		<td>No Role Assigned: <?php echo $summarys['NoRoleCount']?></td>
+		<td>CRBs Needing Attention: <?php echo $summarys['CRBNeedsAttentionCount']?></td>
 	</tr>
 </table>
 <div class="index">
@@ -28,11 +31,17 @@
 	<table>
 		<tr>
 			<td><?php echo $this->Form->input('Year', array(
-//					    'options' => $summarys['LHYears'],
 						'options' => $this->Session->read('Filter.Years'),
 					    'default' => $this->Session->read('Filter.Year')
 					    //'empty' => '(choose one)'
 						));?></td>
+		</tr>
+		<tr>
+			<td><?php echo $this->Form->input('ApplicationProblem', array(
+				'options' => $summarys['problemFilterOptions'],
+			    'default' => $this->Session->read('Filter.Problem')
+						    //'empty' => '(choose one)'
+				));?></td>
 		</tr>
 	</table>
 	<?php echo $this->Form->end('Update filter');?>

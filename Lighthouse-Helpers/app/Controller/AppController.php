@@ -89,10 +89,20 @@ class AppController extends Controller {
     		//debug('No Year in session');
     		$this->Session->write('Filter.Year', $lhyear);
     	}
-    		
-    	$data = array(	'lhyear' => $lhyear,
-        					'lhyears' => $this->Session->read('Filter.Years')
-    	);
+
+    	if ($this->Session->check('Filter.Problem')) {
+    		$applicationProblem = $this->Session->read('Filter.Problem');
+    		//debug('Year in session '.$lhyear);
+    	}
+    	else {
+    		$applicationProblem = '0';
+    		$this->Session->write('Filter.Problem', $applicationProblem);
+    	}
+
+    	$data = array('lhyear' => $lhyear,
+        				'lhyears' => $this->Session->read('Filter.Years'),
+        				'applicationProblem' => $applicationProblem
+        				);
     		
     	return $data;
     }

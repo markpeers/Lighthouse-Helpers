@@ -1,6 +1,7 @@
 <!-- File: /app/View/Applications/helperlist.ctp -->
 <!-- <?php //debug($lighthouseyears); ?> -->
-<h2>Helpers <?php echo $this->Session->read('Filter.Year')?></h2>
+<h2>Helpers <?php echo $this->Session->read('Filter.Year');
+					echo ' ('.$problemFilterOptions[$this->Session->read('Filter.Problem')].')'?></h2>
 
 <div class="index">
 <table>
@@ -63,6 +64,13 @@
 						'default' => $this->Session->read('Filter.Year')
 					    //'empty' => '(choose one)'
 						));?></td>
+		</tr>
+		<tr>
+			<td><?php echo $this->Form->input('ApplicationProblem', array(
+				'options' => $problemFilterOptions,
+			    'default' => $this->Session->read('Filter.Problem')
+						    //'empty' => '(choose one)'
+				));?></td>
 		</tr>
 	</table>
 	<?php echo $this->Form->end('Update filter');?>

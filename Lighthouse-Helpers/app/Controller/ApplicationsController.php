@@ -2,13 +2,18 @@
 class ApplicationsController extends AppController {
 	public $uses = array('Application', 'Role', 'Church', 'AssignedRole', 'AssignedSession', 'Person');
 	public $name = 'Applications';
+	
+	private $crbValidYears = 5; //no of years CRB is valid
+	private $crbRequiredAge = 17; //age at which a CRB is required
+	private $ageAtDate = '08-31'; //when calculating age use this date (August 31)	
+	private $problemFilterOptions = array('All', 'No Reference', 'No Role', 'No CRB'); //options for filter in index page
 
 	public $paginate = array(
         'limit' => 10,
         'order' => array(
             'Person.Last_Name' => 'asc',
 			'Person.First_Name' => 'asc'
-	),
+			),
 		'fields' => array(
 			'Application.Application_ID',
 			'Application.Year',
@@ -16,23 +21,93 @@ class ApplicationsController extends AppController {
 			'Person.Title',
 			'Person.First_Name',
 			'Person.Last_Name'
-	)
+			)
 	);
+	
+	private function noRole($lhyear) {
+		//get helpers with no role assigned
+		$sql = 'SELECT `Application`.`Application_ID` ';
+		$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
+		$sql = $sql . 'LEFT JOIN `reg_helpers_role_assigned` AS `AssignedRoles` ON (`AssignedRoles`.`tblApplication_Application_ID` = `Application`.`Application_ID`) ';
+		$sql = $sql . 'WHERE `Application`.`year` = ' . $lhyear . ' AND `AssignedRoles`.`Role_Assigned_ID` IS NULL';
+		
+		$noRoleApplications = $this->Application->query($sql);
 
+		$noRole = array();
+		foreach ($noRoleApplications as $noRoleApplication) {
+			array_push($noRole, $noRoleApplication['Application']['Application_ID']);
+		}
+		
+		return $noRole;
+	}
+	
+	private function crbAttention($lhyear) {
+		//get helpers with CRB needing attention
+		$sql = 'SELECT `Application`.`Application_ID` ';   
+		$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
+		$sql = $sql . 'LEFT JOIN `reg_helpers_person` AS `Person` ON (`Application`.`tblPerson_Person_ID` = `Person`.`Person_ID`) ';
+		$sql = $sql . 'WHERE `Application`.`year` = ' . $lhyear . ' ';
+		$sql = $sql . 'AND (' . $lhyear . ' - YEAR(`Person`.`Date_of_birth`)) - ("' . $this->ageAtDate . '" < MID(`Person`.`Date_of_birth`, 6, 5)) > ' . $this->crbRequiredAge . ' ';
+		$sql = $sql . 'AND (( `Application`.`CRB_date` IS NULL ) OR ( ' . $lhyear . ' - YEAR(`Application`.`CRB_date`)) - ("' . $this->ageAtDate . '" < MID(`Application`.`CRB_date`, 6, 5)) > ' . $this->crbValidYears . ') ';
+
+		$crbApplications = $this->Application->query($sql);
+		$crbAttention = array();
+		foreach ($crbApplications as $crbApplication) {
+			array_push($crbAttention, $crbApplication['Application']['Application_ID']);
+		}
+		
+		return $crbAttention;
+	}
+	
+	private function referenceAttention($lhyear) {
+		//get applications without references
+		//get all applications for current year and only add reference record if the reference is ok
+		$applicationreferences = $this->Application->find('all', array('fields' => array('Application.Application_ID',
+																						'Application.tblPerson_Person_ID',
+																				        'Application.Year'
+																						),
+																	'contain' => array('Person' => array('fields' => array('Last_Name'),
+																										'Reference' => array('fields' => array('year','Reference_OK'
+																																				),
+																															'conditions' => array('year' => $lhyear,
+																																					'Reference_OK != ' => 0
+																																					)
+																															)
+																										),
+																						),
+																	'conditions' => array('Application.year' => $lhyear
+																						)
+																	)
+														);
+		//walk through all applications and extract the application id only if there is no reference
+		$referenceAttention = array();
+		foreach ($applicationreferences as $applicationreference) {
+			//debug($application);
+			if (count($applicationreference['Person']['Reference']) == 0) {
+				array_push($referenceAttention, $applicationreference['Application']['Application_ID']);
+			}
+		}
+		return $referenceAttention;
+	}
 
 	function index() {
 
-		//		$this->Session->setflash('Flash message');
+		//$this->Session->setflash('Flash message');
 
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];
 		$lhyears = $sessiondata['lhyears'];
-
+		$applicationProblem = $sessiondata['applicationProblem'];
+		
+		
 		//check to see if the filter is being changed
 		if (!empty($this->request->data)) {
+			//debug($this->request->data);
 			$lhyear = $this->request->data['Filter']['Year'];
 			//write the updated filter year to the session
 			$this->Session->write('Filter.Year', $lhyear);
+			$applicationProblem = $this->request->data['Filter']['ApplicationProblem'];
+			$this->Session->write('Filter.Problem', $applicationProblem);
 		}
 
 		//get role counts from database - couldn't do this with cake
@@ -44,10 +119,8 @@ class ApplicationsController extends AppController {
 		$sql = $sql . 'GROUP BY `Role`.`Role_per_agegroup`,`Role`.`RoleName`';
 
 		$rolecounts = $this->Application->query($sql);
-
-		//get total number of helpers for current year
-		$totalHelpers = $this->Application->find('count', array('conditions' => array('Application.Year' => $lhyear)));
-
+		
+		//get roles and create counts		
 		$rolearray = array();
 		// arrays are toddler, 4s, 5s, 6s, 7s, 8s, 9s, 10+, 12
 		$agegroupheader = array('Role', 'Toddlers', '4s', '5s', '6s', '7s', '8s', '9s', '10+', '12s');
@@ -210,12 +283,16 @@ class ApplicationsController extends AppController {
 		$toysale,$treasurer,$vicechair,$water);
 
 
-		$summarys = array('TotalHelpers' => $totalHelpers,
+		$summarys = array('TotalHelpers' => $this->Application->find('count', array('conditions' => array('Application.Year' => $lhyear))), //get total number of helpers for current year
+							'NoRoleCount' => count($this->noRole($lhyear)), //get applications with no role assigned
+							'CRBNeedsAttentionCount' => count($this->crbAttention($lhyear)),
+							'ReferenceNeedsAttentionCount' => count($this->referenceAttention($lhyear)), //get applications without references
 							'AgeGroupHeader' => $agegroupheader,
 							'AgeGroupRoles' => $agegrouproles,
 							'OtherRolesHeader' => $otherrolesheader,
 							'OtherRoles' => $otherroles,
-							'LHYears' => $sessiondata['lhyears']);
+							'LHYears' => $sessiondata['lhyears'],
+							'problemFilterOptions' => $this->problemFilterOptions);
 
 		$this->set('summarys', $summarys);
 	}
@@ -225,16 +302,28 @@ class ApplicationsController extends AppController {
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];
 		$lhyears = $sessiondata['lhyears'];
-		 
+		$applicationProblem = $sessiondata['applicationProblem'];
+		
+	 
 		if (!empty($this->request->data)) {
+			//debug($this->request->data);
 			$lhyear = $this->request->data['Filter']['Year'];
 			$this->Session->write('Filter.Year', $lhyear);
+			$applicationProblem = $this->request->data['Filter']['ApplicationProblem'];
+			$this->Session->write('Filter.Problem', $applicationProblem);
+			}
+		
+		switch ($applicationProblem) {
+			case 0: $conditions = array('Application.Year'=> $this->Session->read('Filter.Year')); break; //all applications
+			case 1: $conditions = array('Application.Application_ID ' => $this->referenceAttention($lhyear)); break; //applications with no reference
+			case 2: $conditions = array('Application.Application_ID ' => $this->noRole($lhyear)); break; //applications with no role assigned
+			case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($lhyear));	break; //applications with no CRB
+			default:
 		}
-		$this->paginate['conditions'] = array(
-    		'Application.Year'=> $this->Session->read('Filter.Year')
-		);
+		$this->paginate['conditions'] = $conditions;
 
 		$this->set('LHYears', $lhyears);
+		$this->set('problemFilterOptions', $this->problemFilterOptions);
 		$this->set('applications', $this->paginate());
 	}
 
@@ -307,15 +396,35 @@ class ApplicationsController extends AppController {
 	}
     
 	public function test($id = null) {
+		$sessiondata = $this->getsessiondata();
+		$lhyear = $sessiondata['lhyear'];
 		
-		if ($this->request->is('ajax')) {
-			$this->log($this->request, 'debug');
-			$this->render('test', 'ajax');
-			//$tab = $this->request->params;
-		}else{
-			print_r($this->referer());
-			$this->redirect($this->referer());
+		//get all applications for current year and only add reference record if the reference is ok 
+		$applications = $this->Application->find('all', array('fields' => array('Application.Application_ID',
+																				'Application.tblPerson_Person_ID',
+																		        'Application.Year'
+																				),
+															'contain' => array('Person' => array('fields' => array('Last_Name'),
+																								'Reference' => array('fields' => array('year','Reference_OK'),
+																													'conditions' => array('year' => $lhyear,
+																																			'Reference_OK != ' => 0)
+																													)
+																								),
+																				),
+															'conditions' => array('Application.year' => $lhyear
+																				)
+															)
+												);
+		//walk through all applications and extract the application id only if there is no reference
+		$noreferenceapplications = array();
+		foreach ($applications as $application) {
+			//debug($application);
+			if (count($application['Person']['Reference']) == 0) {
+				array_push($noreferenceapplications, $application['Application']['Application_ID']);
+			}
 		}
+		//debug($applications);
+		debug($noreferenceapplications);
 	}
 	
 	 
