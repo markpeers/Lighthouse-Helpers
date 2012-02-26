@@ -2,7 +2,7 @@
 class Reference extends AppModel {
 	public $useTable = 'reference';
 	public $primaryKey = 'Reference_ID';
-
+	
 	public $belongsTo = array(
 			'Referee' => array(
 				'className' => 'Referee',

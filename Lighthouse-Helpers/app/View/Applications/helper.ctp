@@ -83,11 +83,29 @@
 				</td>
 			<?php endforeach; ?>
 				</tr>
+				<tr>
+			<?php foreach ($data['Person']['RefereeTemp'] as $referee): ?>
+				<td class="actions">
+					<?php echo $this->Html->link('Confirm Referee', array('controller' => 'referees',
+																'action' => 'confirm',
+																$referee['Referee_temp_ID']
+																)
+												); ?>
+				</td>
+			<?php endforeach; ?>
+				</tr>
 			</table>
 		</div>
 		<div id="tabs-references">
 			<table>
-				<tr><th>Referee</th><th>Reference Status</th><th>Reference Requested Date</th><th>Reference Received Date</th><th>Reference OK</th></tr>
+				<tr>
+					<th>Referee</th>
+					<th>Reference Status</th>
+					<th>Reference Requested Date</th>
+					<th>Reference Received Date</th>
+					<th>Reference OK</th>
+					<th>Actions</th>
+				</tr>
 				
 			<?php foreach ($data['Person']['Reference'] as $reference): ?>
 				<tr>
@@ -135,6 +153,22 @@
 					echo '-';
 				}
 				}?></td>
+				<td class="actions">
+					<?php 
+						echo $this->Html->link('Edit', array('controller' => 'references',
+															'action' => 'edit',
+															$reference['Reference_ID']
+															)
+												); 
+						echo $this->Form->postLink('Delete', array('controller' => 'References',
+																	'action' => 'delete', 
+																	$reference['Reference_ID']
+																	),
+															null,
+															'Are you sure you want to remove the reference?'
+													); 
+					?>
+				</td>
 				</tr>
 			<?php endforeach; ?>
 				
@@ -142,24 +176,213 @@
 		</div>
 		<div id="tabs-help-offered">
 			<table>
-				<tr><th>Role</th><th>Sessions</th></tr>
-			<?php foreach ($data['OfferedRole'] as $offeredrole): ?>
+				<tr><th>Role</th><th>Sessions</th><th>Actions</th></tr>
+			<?php 
+				$assignedroletype = array();
+				foreach ($data['AssignedRole'] as $assignedrole):
+					$assignedroletype[] = $assignedrole['tblRole_Role_ID'];
+				endforeach;
+				//debug($assignedroletype);
+				foreach ($data['OfferedRole'] as $offeredrole): 
+					$sessiontable = array(	array('heading' => 'am',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-'),
+										  	array('heading' => 'pm',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-'),
+											array('heading' => 'evening',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-'),
+											array('heading' => 'night',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-')
+									);?>
 				<tr><td><?php echo $offeredrole['Role']['RoleName'];?></td>
-					<td><?php foreach ($offeredrole['OfferedSession'] as $lhsession) {
-						echo $lhsession['Session']['Description'].', ';
-					}?></td>
+					<td><?php  foreach ($offeredrole['OfferedSession'] as $lhsession) {
+						switch ($lhsession['tblSessions_Sessions_ID']) {
+							case 1: 	$sessiontable[0]['mon']='Y'; break;
+							case 2: 	$sessiontable[1]['mon']='Y'; break;
+							case 3: 	$sessiontable[2]['mon']='Y'; break;
+							case 4: 	$sessiontable[3]['mon']='Y'; break;
+							case 5: 	$sessiontable[0]['tue']='Y'; break;
+							case 6: 	$sessiontable[1]['tue']='Y'; break;
+							case 7: 	$sessiontable[2]['tue']='Y'; break;
+							case 8: 	$sessiontable[3]['tue']='Y'; break;
+							case 9: 	$sessiontable[0]['wed']='Y'; break;
+							case 10:	$sessiontable[1]['wed']='Y'; break;
+							case 11:	$sessiontable[2]['wed']='Y'; break;
+							case 12:	$sessiontable[3]['wed']='Y'; break;
+							case 13: 	$sessiontable[0]['thu']='Y'; break;
+							case 14:	$sessiontable[1]['thu']='Y'; break;
+							case 15:	$sessiontable[2]['thu']='Y'; break;
+							case 16:	$sessiontable[3]['thu']='Y'; break;
+							case 17: 	$sessiontable[0]['fri']='Y'; break;
+							case 18:	$sessiontable[1]['fri']='Y'; break;
+							case 19:	$sessiontable[2]['fri']='Y'; break;
+							case 20:	$sessiontable[3]['fri']='Y'; break;
+							case 21: 	$sessiontable[0]['sat']='Y'; break;
+							case 22:	$sessiontable[1]['sat']='Y'; break;
+							case 23:	$sessiontable[2]['sat']='Y'; break;
+							case 24:	$sessiontable[3]['sat']='Y'; break;
+							case 25: 	$sessiontable[0]['week']='Y'; break;
+							case 26:	$sessiontable[1]['week']='Y'; break;
+							case 27:	$sessiontable[2]['week']='Y'; break;
+							case 28:	$sessiontable[3]['week']='Y'; break;
+							case 29:	$sessiontable[0]['w/e']='Y'; break;
+							case 30:	$sessiontable[1]['w/e']='Y'; break;
+								
+							default: ; break;
+						};
+					}?>
+						<table>
+						<?php echo $this->Html->tableHeaders(array('', 
+																	'All Week',
+																	'Mon',
+																	'Tue',
+																	'Wed',
+																	'Thu',
+																	'Fri',
+																	'Sat',
+																	'Weekend'));
+							echo $this->Html->tableCells($sessiontable);
+						?>
+						</table>
+					</td>
+					<td class="actions">
+						<?php if (in_array($offeredrole['tblRole_Role_ID'], $assignedroletype)) {
+							echo 'Accepted';
+						}
+						else {
+							echo $this->Html->link('Accept', array('controller' => 'OfferedRoles',
+																	'action' => 'accept',
+																	$offeredrole['Role_Offered_ID']
+																	)
+													);
+						}
+						?>
+					</td>
 				</tr>
 			<?php endforeach; ?>
 			</table>
 		</div>
 		<div id="tabs-roles-assigned">
 			<table>
-				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th></tr>
-			<?php foreach ($data['AssignedRole'] as $assignedrole): ?>
+				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th><th>Actions</th></tr>
+			<?php foreach ($data['AssignedRole'] as $assignedrole): 
+					$sessiontable = array(	array('heading' => 'am',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-'),
+										  	array('heading' => 'pm',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-'),
+											array('heading' => 'evening',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-'),
+											array('heading' => 'night',
+														'week' => '-',
+														'mon' => '-',
+														'tue' => '-',
+														'wed' => '-',
+														'thu' => '-',
+														'fri' => '-',
+														'sat' => '-',
+														'w/e' => '-')
+									);?>
 				<tr><td><?php echo $assignedrole['Role']['RoleName'];?></td>
-					<td><?php foreach ($assignedrole['AssignedSession'] as $lhsession) {
-						echo $lhsession['Session']['Description'].', ';
-					}?></td>
+					<td><?php  foreach ($assignedrole['AssignedSession'] as $lhsession) {
+						switch ($lhsession['tblSessions_Sessions_ID']) {
+							case 1: 	$sessiontable[0]['mon']='Y'; break;
+							case 2: 	$sessiontable[1]['mon']='Y'; break;
+							case 3: 	$sessiontable[2]['mon']='Y'; break;
+							case 4: 	$sessiontable[3]['mon']='Y'; break;
+							case 5: 	$sessiontable[0]['tue']='Y'; break;
+							case 6: 	$sessiontable[1]['tue']='Y'; break;
+							case 7: 	$sessiontable[2]['tue']='Y'; break;
+							case 8: 	$sessiontable[3]['tue']='Y'; break;
+							case 9: 	$sessiontable[0]['wed']='Y'; break;
+							case 10:	$sessiontable[1]['wed']='Y'; break;
+							case 11:	$sessiontable[2]['wed']='Y'; break;
+							case 12:	$sessiontable[3]['wed']='Y'; break;
+							case 13: 	$sessiontable[0]['thu']='Y'; break;
+							case 14:	$sessiontable[1]['thu']='Y'; break;
+							case 15:	$sessiontable[2]['thu']='Y'; break;
+							case 16:	$sessiontable[3]['thu']='Y'; break;
+							case 17: 	$sessiontable[0]['fri']='Y'; break;
+							case 18:	$sessiontable[1]['fri']='Y'; break;
+							case 19:	$sessiontable[2]['fri']='Y'; break;
+							case 20:	$sessiontable[3]['fri']='Y'; break;
+							case 21: 	$sessiontable[0]['sat']='Y'; break;
+							case 22:	$sessiontable[1]['sat']='Y'; break;
+							case 23:	$sessiontable[2]['sat']='Y'; break;
+							case 24:	$sessiontable[3]['sat']='Y'; break;
+							case 25: 	$sessiontable[0]['week']='Y'; break;
+							case 26:	$sessiontable[1]['week']='Y'; break;
+							case 27:	$sessiontable[2]['week']='Y'; break;
+							case 28:	$sessiontable[3]['week']='Y'; break;
+							case 29:	$sessiontable[0]['w/e']='Y'; break;
+							case 30:	$sessiontable[1]['w/e']='Y'; break;
+								
+							default: ; break;
+						};
+					}?>
+						<table>
+						<?php echo $this->Html->tableHeaders(array('', 
+																	'All Week',
+																	'Mon',
+																	'Tue',
+																	'Wed',
+																	'Thu',
+																	'Fri',
+																	'Sat',
+																	'Weekend'));
+							echo $this->Html->tableCells($sessiontable);
+						?>
+						</table>
+					</td>
+				
+			
 					<td><?php if ($assignedrole['Sent_to_AGL'] == NULL) {
 									echo 'No';
 								}else{
@@ -171,9 +394,38 @@
 								else {
 									echo 'Yes';
 								}?></td>
-				
+					<td class="actions">
+						<?php echo $this->Html->link('Edit', array('controller' => 'AssignedRoles',
+																	'action' => 'edit',
+																	$assignedrole['Role_Assigned_ID']
+																	)
+													); ?>
+						<?php echo $this->Form->postLink(__('Delete'), array('controller' => 'AssignedRoles',
+																			'action' => 'delete', 
+																			$assignedrole['Role_Assigned_ID']), 
+																			null, 
+																			__('Are you sure you want to remove role "%s" from %s %s?', 
+																				$assignedrole['Role']['RoleName'],
+																				$data['Person']['Nickname'],
+																				$data['Person']['Last_Name'])); ?>
+					</td>
 				</tr>
 			<?php endforeach; ?>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td class="actions">
+						<?php echo $this->Html->link('Add New Role', 
+														array('controller' => 'AssignedRoles',
+																'action' => 'add',
+																$data['Application']['Application_ID'],
+																$data['Person']['Person_ID']
+																)
+													); ?>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<div id="tabs-experience">
@@ -236,51 +488,63 @@
 		</div>
 		<div id="tabs-crb">
 			<table>
-				<tr><td>CRB Disclosure:</td><td><?php switch ($data['Application']['CRB']){
+				<tr><th>CRB Disclosure</th><th></th><th>Actions</th></tr>
+				<?php
+					$editbutton = '<td class="actions">'. $this->Html->link('Edit', array('action' => 'editcrb', 
+																							$data['Application']['Application_ID']
+																							)
+																			). '</td>';
+					
+				 	switch ($data['Application']['CRB']){
+														case 0:
+														  echo '<tr><td>Not Required</td><td></td>'.$editbutton.'</tr>';
+														  break;
 														case 1:
-														  echo 'None';
+														  echo '<tr><td>None</td><td></td>'.$editbutton.'</tr>';
 														  break;
 														case 2:
 														  echo ''; //Yes
 														  break;
 														case 3:
-														  echo 'Applied For';
+														  echo '<tr><td>Applied For</td><td></td>'.$editbutton.'</tr>';
 														  break;
 														default:
-														  echo 'Should never get here';
-														} ;?></td>
-				</tr>
-				<?php if ($data['Application']['CRB'] = 2)
-					echo '<tr><td>Type: '; 
-					echo '<br/>Date: ';
-					echo '<br/>Number: ';
-					echo '</td><td>';
-					switch ($data['Application']['CRB_type']){
-														case 0:
-														  echo 'None';
-														  break;
-														case 1:
-														  echo 'Basic';
-														  break;
-														case 2:
-														  echo 'Standard';
-														  break;
-														case 3:
-														  echo 'Enhanced';
-														  break;
-														case 4:
-														  echo 'Lighthouse';
-														  break;
-														default:
-														  echo 'Should never get here';
+														  echo '<tr><td>Should never get here</td><td></td>'.$editbutton.'</tr>';
 														} ;
-					echo '<br/>';
-					echo date('jS F Y',strtotime($data['Application']['CRB_date']));
-					echo '<br/>';
-					echo $data['Application']['CRB_number'];
-					echo '</td></tr>';
-				?>
-				<tr><td>CRB Notes:</td><td><?php echo $data['Application']['CRB_note']; ?></td></tr>
+					if ($data['Application']['CRB'] == 2) {
+							echo '<tr><td>Type: '; 
+							echo '<br/>Date: ';
+							echo '<br/>Number: ';
+							echo '</td><td>';
+							switch ($data['Application']['CRB_type']){
+																case 0:
+																  echo 'None';
+																  break;
+																case 1:
+																  echo 'Basic';
+																  break;
+																case 2:
+																  echo 'Standard';
+																  break;
+																case 3:
+																  echo 'Enhanced';
+																  break;
+																case 4:
+																  echo 'Lighthouse';
+																  break;
+																default:
+																  echo 'Should never get here';
+																} ;
+							echo '<br/>';
+							echo date('jS F Y',strtotime($data['Application']['CRB_date']));
+							echo '<br/>';
+							echo $data['Application']['CRB_number'];
+							echo '</td>'.$editbutton.'</tr>';
+							echo '<tr><td>CRB Notes:</td><td>';
+							echo $data['Application']['CRB_note'];
+							echo '</td></tr>';
+				 		} 
+				 ?>
 			</table>
 		</div>
 		<div id="tabs-lh-address">
@@ -304,9 +568,12 @@
 		</div>
 		<div id="tabs-notes">
 			<table>
-				<tr><th>Notes</th></tr>
+				<tr><th>Notes</th><th>Actions</th></tr>
 				<tr>
 					<td><?php echo $data['Application']['Notes'];?> </td>
+					<td class="actions">
+						<?php echo $this->Html->link('Edit', array('action' => 'editnotes',	$data['Application']['Application_ID'])); ?>
+					</td>
 				</tr>
 			</table>
 		</div>
@@ -366,8 +633,8 @@
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
-		<li><?php echo $this->Html->link(__('List Helpers'), array('action' => 'helperlist')); ?></li>
-		<li><?php echo $this->Html->link(__('Edit Application'), array('action' => 'edit', $data['Application']['Application_ID'])); ?></li>
+		<li><?php echo $this->Html->link(__('Helper Summary'), array('controller' => 'applications','action' => 'index')); ?></li>
+		<li><?php echo $this->Html->link(__('List Helpers'), array('controller' => 'applications','action' => 'helperlist')); ?></li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>
 </div>

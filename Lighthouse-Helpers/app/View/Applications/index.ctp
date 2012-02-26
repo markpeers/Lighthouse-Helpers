@@ -2,15 +2,22 @@
 <?php //debug($summarys['NoRole']); ?>
 <?php //echo $this->element('menu1'); ?>
 <h2>Helper Summary <?php echo $this->Session->read('Filter.Year')?></h2>
-<table>
-	<tr>
-		<td>Total helpers: <?php echo $summarys['TotalHelpers']; ?></td>
-		<td>No Reference: <?php echo $summarys['ReferenceNeedsAttentionCount']?></td>
-		<td>No Role Assigned: <?php echo $summarys['NoRoleCount']?></td>
-		<td>CRBs Needing Attention: <?php echo $summarys['CRBNeedsAttentionCount']?></td>
-	</tr>
-</table>
 <div class="index">
+	<table>
+		<tr>
+			<th>Helpers Registered</th>
+			<th>Helpers With No Reference</th>
+			<th>Helpers With No Role Assigned</th>
+			<th>Helpers With No CRB</th>
+		</tr>
+		<tr>
+			<td><?php echo $summarys['TotalHelpers']; ?></td>
+			<td><?php echo $summarys['ReferenceNeedsAttentionCount']?></td>
+			<td><?php echo $summarys['NoRoleCount']?></td>
+			<td><?php echo $summarys['CRBNeedsAttentionCount']?></td>
+		</tr>
+	</table>
+	<br />
 	<table>
 		<?php 
 			echo $this->Html->tableHeaders($summarys['AgeGroupHeader']); 
@@ -44,7 +51,7 @@
 				));?></td>
 		</tr>
 	</table>
-	<?php echo $this->Form->end('Update filter');?>
+	<?php echo $this->Form->end('Update Filter');?>
 </div>
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>

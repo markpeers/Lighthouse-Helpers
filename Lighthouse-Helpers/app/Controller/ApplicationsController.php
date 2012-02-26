@@ -1,6 +1,11 @@
 <?php
 class ApplicationsController extends AppController {
-	public $uses = array('Application', 'Role', 'Church', 'AssignedRole', 'AssignedSession', 'Person');
+	public $uses = array('Application', 
+						'Role', 
+						'Church', 
+						'AssignedRole', 
+						'AssignedSession', 
+						'Person');
 	public $name = 'Applications';
 	
 	private $crbValidYears = 5; //no of years CRB is valid
@@ -168,7 +173,6 @@ class ApplicationsController extends AppController {
 		$water = array('Water Tent',0,0);
 
 		foreach($rolecounts as $role):
-		//array_push($rolearray, $role['Role']['RoleName']);
 		switch ($role['Role']['RoleName'])
 		{
 			case 'Toddler Helper': $lhk[1] = $role[0]['Qty']; break;
@@ -332,6 +336,11 @@ class ApplicationsController extends AppController {
 			$sessiondata = $this->getsessiondata();
 			$year = $sessiondata['lhyear'];
 		}
+		
+		//write current application_id to the session
+		$this->Session->write('Current.Application', $application_id);
+		$this->Session->write('Current.Person', $person_id);
+
 		//debug('Test');
 		$this->Application->contain(array('Person',
 										'Person.Church',
@@ -349,50 +358,59 @@ class ApplicationsController extends AppController {
 										'AssignedRole.AssignedSession',
 										'AssignedRole.AssignedSession.Session'));
 		$application = $this->Application->find('first',
- 		//		array('conditions' => array('Application.tblPerson_Person_ID' => $person_id, 
-		//									'Application.Year' => $year )
  				array('conditions' => array('Application.Application_ID' => $application_id )
-		));
-			
+					));
 				
 		$this->set('data', $application);
-		//$this->set('data', array('Application' => $application));
 	}
 	
-	public function edit($application_id = null, $person_id = null, $year = null) {
-		if ($year==null) {
-		$sessiondata = $this->getsessiondata();
-		$year = $sessiondata['lhyear'];
-		}
+    
+	public function editnotes($application_id = null) {
 		$this->Application->id = $application_id;
-	    if ($this->request->is('get')) {
-	    	//debug('this is a get');
-	    	$this->Application->contain(array('Person',
-	    											'Person.Church',
-	    											'Person.RefereeTemp',
-	    											'Person.RefereeTemp.year = '.$year,
-	    											'Person.Reference',
-	    											'Person.Reference.Referee',
-	    											'Person.Reference.year = '.$year,
-	    											'OfferedRole',
-	    											'OfferedRole.Role',
-	    											'OfferedRole.OfferedSession',
-	    											'OfferedRole.OfferedSession.Session',
-	    											'AssignedRole',
-	    											'AssignedRole.Role',
-	    											'AssignedRole.AssignedSession',
-	    											'AssignedRole.AssignedSession.Session'));
-	    	
-	        $this->request->data = $this->Application->read();
-	        //debug($this->request->data);
-	    } else {
-	        if ($this->Application->save($this->request->data)) {
-	            $this->Session->setFlash('Application '.$this->Application->id.' has been updated.');
-	            $this->redirect(array('action' => 'helper', $this->Application->id, $person_id, $year));
-	        } else {
-	            $this->Session->setFlash('Unable to update your post.');
-	        }
-	    }
+		
+		if (!$this->Application->exists()) {
+			throw new NotFoundException(__('Invalid reference'));
+		}
+		if ($this->request->is('post') || $this->request->is('put')) {
+			//debug($this->request);
+			if ($this->Application->save($this->request->data)) {
+				$this->Session->setFlash(__('The application notes have been updated'));
+				$this->redirect(array('controller' => 'applications',
+												'action' => 'helper',
+												$this->Session->read('Current.Application'),
+												$this->Session->read('Current.Person'),
+												$this->Session->read('Filter.Year')));
+			} else {
+				$this->Session->setFlash(__('The application notes could not be saved. Please, try again.'));
+			}
+		} else {
+			$this->request->data = $this->Application->read(null, $application_id);
+		}
+	}
+    
+	public function editcrb($application_id = null) {
+		$this->Application->id = $application_id;
+		
+		if (!$this->Application->exists()) {
+			throw new NotFoundException(__('Invalid reference'));
+		}
+		if ($this->request->is('post') || $this->request->is('put')) {
+			//debug($this->request);
+			if ($this->Application->save($this->request->data)) {
+				$this->Session->setFlash(__('The application CRB details have been updated'));
+				$this->redirect(array('controller' => 'applications',
+												'action' => 'helper',
+												$this->Session->read('Current.Application'),
+												$this->Session->read('Current.Person'),
+												$this->Session->read('Filter.Year')));
+			} else {
+				$this->Session->setFlash(__('The application CRB details could not be saved. Please, try again.'));
+			}
+		} else {
+			$this->request->data = $this->Application->read(null, $application_id);
+		}
+		
+		$this->set('crbValidYears', $this->crbValidYears);
 	}
     
 	public function test($id = null) {

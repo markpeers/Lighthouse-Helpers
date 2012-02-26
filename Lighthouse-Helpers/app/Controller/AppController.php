@@ -74,6 +74,7 @@ class AppController extends Controller {
     	else {
     		//debug('Filter.years is setxxx');
     	}
+    	
     	//print_r($this->Session->read('Filter.Years'));
     	//print_r($this->Session->read('Filter.Year'));
     

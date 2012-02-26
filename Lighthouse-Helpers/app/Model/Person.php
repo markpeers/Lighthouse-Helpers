@@ -4,6 +4,8 @@ class Person extends AppModel {
     public $name = 'Person';
 	public $useTable = 'person';
 	public $primaryKey = 'Person_ID';
+	public $virtualFields = array('full_name' => 'CONCAT(Person.First_Name, " ", Person.Last_Name)');
+	public $displayField = 'full_name';
 
 	public $belongsTo = array(
 			'Church' => array(

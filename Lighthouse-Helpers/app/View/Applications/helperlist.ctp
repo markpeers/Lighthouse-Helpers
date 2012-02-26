@@ -9,7 +9,6 @@
 		<th><?php echo 'Title';?></th>
 		<th><?php echo $this->Paginator->sort('Person.First_Name', 'First Name');?></th>
 		<th><?php echo $this->Paginator->sort('Person.Last_Name', 'Last Name');?></th>
-		<th><?php echo 'Year';?></th>
 		<th class="actions"><?php echo __('Actions');?></th>
     </tr>
 
@@ -20,7 +19,6 @@
 				<td><?php echo $application['Person']['Title']; ?></td>
 				<td><?php echo $application['Person']['First_Name']; ?></td>
 				<td><?php echo $application['Person']['Last_Name']; ?></td>
-			    <td><?php echo $application['Application']['Year']; ?></td>
 				<td class="actions">
 					<?php 
 						//echo $this->Html->link('Details', array('action' => 'view', $application['Application']['Application_ID'])); 
@@ -73,7 +71,7 @@
 				));?></td>
 		</tr>
 	</table>
-	<?php echo $this->Form->end('Update filter');?>
+	<?php echo $this->Form->end('Update Filter');?>
 	
 	<h3>Helper Search</h3>	
     <?php echo $this->Form->create('Person',array('action'=>'search'));?>
