@@ -15,7 +15,7 @@ class OfferedRolesController extends AppController {
 		}
 		//debug($this->request);
 		$offeredrole = $this->OfferedRole->read(null, $id);
-		debug($offeredrole);
+		//debug($offeredrole);
 		$roletoadd = array('AssignedRole' => array('tblRole_Role_ID' => $offeredrole['OfferedRole']['tblRole_Role_ID'],
 													'tblApplication_Application_ID' => $offeredrole['OfferedRole']['tblApplication_Application_ID']));
 		//debug($roletoadd);

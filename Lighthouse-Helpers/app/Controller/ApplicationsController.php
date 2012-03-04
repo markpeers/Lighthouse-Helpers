@@ -1,11 +1,14 @@
 <?php
+App::uses('CakeEmail', 'Network/Email');
+
 class ApplicationsController extends AppController {
 	public $uses = array('Application', 
 						'Role', 
 						'Church', 
 						'AssignedRole', 
 						'AssignedSession', 
-						'Person');
+						'Person'
+						);
 	public $name = 'Applications';
 	
 	private $crbValidYears = 5; //no of years CRB is valid
@@ -342,13 +345,14 @@ class ApplicationsController extends AppController {
 		$this->Session->write('Current.Person', $person_id);
 
 		//debug('Test');
+		$lastyear = $year - 1;
 		$this->Application->contain(array('Person',
 										'Person.Church',
-										'Person.RefereeTemp',
-										'Person.RefereeTemp.year = '.$year,
-										'Person.Reference',
+										'Person.RefereeTemp' => array('conditions' => array('RefereeTemp.Year = ' => $year)),
+//										'Person.RefereeTemp.year = '.$year,
 										'Person.Reference.Referee',
-										'Person.Reference.year = '.$year,
+										'Person.Reference' => array('conditions' => array('Reference.Year ' => array($year, $year - 1)),
+																	'order' => array('Reference.Year DESC')),
 										'OfferedRole',
 										'OfferedRole.Role',
 										'OfferedRole.OfferedSession',
@@ -372,7 +376,8 @@ class ApplicationsController extends AppController {
 			throw new NotFoundException(__('Invalid reference'));
 		}
 		if ($this->request->is('post') || $this->request->is('put')) {
-			//debug($this->request);
+			//debug($this->request->data);
+			//$this->log($this->request->data, 'debug');
 			if ($this->Application->save($this->request->data)) {
 				$this->Session->setFlash(__('The application notes have been updated'));
 				$this->redirect(array('controller' => 'applications',
@@ -417,33 +422,7 @@ class ApplicationsController extends AppController {
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];
 		
-		//get all applications for current year and only add reference record if the reference is ok 
-		$applications = $this->Application->find('all', array('fields' => array('Application.Application_ID',
-																				'Application.tblPerson_Person_ID',
-																		        'Application.Year'
-																				),
-															'contain' => array('Person' => array('fields' => array('Last_Name'),
-																								'Reference' => array('fields' => array('year','Reference_OK'),
-																													'conditions' => array('year' => $lhyear,
-																																			'Reference_OK != ' => 0)
-																													)
-																								),
-																				),
-															'conditions' => array('Application.year' => $lhyear
-																				)
-															)
-												);
-		//walk through all applications and extract the application id only if there is no reference
-		$noreferenceapplications = array();
-		foreach ($applications as $application) {
-			//debug($application);
-			if (count($application['Person']['Reference']) == 0) {
-				array_push($noreferenceapplications, $application['Application']['Application_ID']);
 			}
-		}
-		//debug($applications);
-		debug($noreferenceapplications);
-	}
 	
 	 
 	function clearsession() {

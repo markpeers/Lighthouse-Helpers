@@ -1,4 +1,4 @@
-<?php debug($application_id);?>
+<?php //debug($application_id);?>
 <div class="assignedroles form">
 <?php echo $this->Form->create('AssignedRole');?>
 	<fieldset>

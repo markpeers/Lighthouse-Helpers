@@ -11,5 +11,10 @@ class Role extends AppModel {
 			'OfferedRole' => array(
 				'className' => 'OfferedRole',
 				'foreignKey' => 'tblRole_Role_ID'));
+	
+	public $hasOne = array(
+			'RoleLeaderLink' => array(
+				'className' => 'RoleLeaderLink',
+				'foreignKey' => 'role_id'));
 
 }

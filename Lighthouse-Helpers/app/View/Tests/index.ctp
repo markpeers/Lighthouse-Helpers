@@ -10,7 +10,7 @@
 		//									array(
 		//										'async' => true,
 		//										'update' => '#content')));
-		debug($this->request->data);
+		//debug($this->request->data);
 		//echo $this->Js->link('save', array('url'=>$url), array('update'=>'#content'));
 		echo $this->Js->link('test link', array('page' => 2), array(
 														'before' => $this->Js->get('#sending')->effect('fadeIn'), 

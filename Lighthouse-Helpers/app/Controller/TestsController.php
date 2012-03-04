@@ -5,15 +5,15 @@ class TestsController extends AppController {
     public  $uses =  null;
 
     function index(){
-		$this->log('TestController Index', 'debug');
+		//$this->log('TestController Index', 'debug');
 		if ($this->RequestHandler->isAjax()){
-				$this->log('Ajax request', 'debug');
-				$this->log($this->request, 'debug');
+				//$this->log('Ajax request', 'debug');
+				//$this->log($this->request, 'debug');
 				$this->set('data', $this->request->data);
 				$this->render('page', 'ajax');
 			}
 		else {	
-				$this->log('Normal request', 'debug');
+				//$this->log('Normal request', 'debug');
     			$this->layout='testdefault';
 			}
     	}

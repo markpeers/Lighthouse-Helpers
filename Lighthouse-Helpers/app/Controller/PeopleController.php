@@ -58,17 +58,17 @@ class PeopleController extends AppController {
             echo json_encode($response);
     	
     	} elseif ($this->request->is('post')) {
-    		debug($this->request->data);
+//    		debug($this->request->data);
      		$this->Person->contain(array('Application',
     		            				'Application.application_id',
     		            				'Application.year = '.$lhyear));
     		$lhhelper=$this->Person->find('first',array('conditions'=>array('Person_ID'=>$this->request->data['Person']['id']),
 											    		'fields'=>array('Person.Person_ID', 'Person.First_Name', 'Person.NickName', 'Person.Last_Name')
 											    		));
-    		debug($lhhelper);
+//    		debug($lhhelper);
    		
     		if(count($lhhelper['Application']) == 0){
-    			debug($lhhelper);
+//    			debug($lhhelper);
     			$this->Session->setFlash('No application from '.$lhhelper['Person']['First_Name'].' '.$lhhelper['Person']['Last_Name'].' for '.$lhyear);
     			$this->redirect($this->referer());
     		}else{

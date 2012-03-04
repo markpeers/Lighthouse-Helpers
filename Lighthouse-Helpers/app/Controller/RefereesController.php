@@ -25,11 +25,11 @@ class RefereesController extends AppController {
 		if ($this->request->is('post') || $this->request->is('put')) {
 			//debug($this->request);
 			if ($this->request->data['Reference']['referee'] > 0) { //user has selected referee from dropdown
-				debug('Use known referee');
+				//debug('Use known referee');
 				$referee_id = $this->request->data['Reference']['referee'];
 				$flashmessage = 'Known referee used and ';
 			} else { //no known referee selected for use the offered referee
-				debug('Use offered referee');
+				//debug('Use offered referee');
 				//copy refereetemp record to referee table
 				$refereetemp = $this->RefereeTemp->read(null, $id);
 				$refereetoadd = array('Title'=>$refereetemp['RefereeTemp']['Title'],
@@ -42,7 +42,7 @@ class RefereesController extends AppController {
 										'Post_Code'=>$refereetemp['RefereeTemp']['Post_Code'],
 										'Telephone'=>$refereetemp['RefereeTemp']['Telephone']
 									);
-				debug($refereetoadd);
+				//debug($refereetoadd);
 				if ($this->Referee->save($refereetoadd)) {
 					$referee_id = $this->Referee->id;
 					$flashmessage = 'New referee added to the know referee list and ';
@@ -52,29 +52,23 @@ class RefereesController extends AppController {
 				}
 			}
 			if ($referee_id > 0) { //if there is now a referee to use then add a new reference record
-/* 				$referencetoadd = array('Reference', array('tblPerson_Person_ID'=>$this->Session->read('Current.Person'),
-															'tblReferee_Referee_ID'=>$referee_id,
-															'Year'=>$this->Session->read('Filter.Year')
-															)
-										);
- */	
 				$referencetoadd = array('tblPerson_Person_ID'=>$this->Session->read('Current.Person'),
 										'tblReferee_Referee_ID'=>$referee_id,
 										'Year'=>$this->Session->read('Filter.Year')
 										);
 				
-				debug($referencetoadd);
+				//debug($referencetoadd);
 				if ($this->Reference->save($referencetoadd)) {
 					$flashmessage = $flashmessage.'reference added.';
-					debug($flashmessage);
+					//debug($flashmessage);
 				}
 				else {
 					$flashmessage = $flashmessage.'The reference could not be added. Please, try again. ';
-					debug($flashmessage);
+					//debug($flashmessage);
 				}
 			} else {
 				$flashmessage = $flashmessage.'The reference could not be added. Please, try again. ';
-				debug($flashmessage);
+				//debug($flashmessage);
 			}
 			$this->Session->setFlash($flashmessage);
 			//redirect to helper page

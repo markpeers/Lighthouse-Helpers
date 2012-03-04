@@ -104,11 +104,17 @@
 					<th>Reference Requested Date</th>
 					<th>Reference Received Date</th>
 					<th>Reference OK</th>
+					<th>Year</th>
 					<th>Actions</th>
 				</tr>
 				
-			<?php foreach ($data['Person']['Reference'] as $reference): ?>
-				<tr>
+			<?php foreach ($data['Person']['Reference'] as $reference): 
+					if ($reference['Year'] == $data['Application']['Year']) {
+						$refclass = 'ref-current-year';
+					} else {
+						$refclass = 'ref-last-year';
+					}?>
+				<tr class="<?php echo $refclass;?>">
 				<td><?php echo $reference['Referee']['Title'].' '.$reference['Referee']['First_Name'].' '.$reference['Referee']['Last_Name'];?></td>
 				<td><?php switch ($reference['Reference_Status']){
 														case 1:
@@ -153,25 +159,46 @@
 					echo '-';
 				}
 				}?></td>
+				<td><?php echo $reference['Year']?></td>
 				<td class="actions">
 					<?php 
-						echo $this->Html->link('Edit', array('controller' => 'references',
-															'action' => 'edit',
-															$reference['Reference_ID']
-															)
-												); 
-						echo $this->Form->postLink('Delete', array('controller' => 'References',
-																	'action' => 'delete', 
-																	$reference['Reference_ID']
-																	),
-															null,
-															'Are you sure you want to remove the reference?'
+						if ($reference['Year'] == $data['Application']['Year']) {
+							echo $this->Html->link('Edit', array('controller' => 'references',
+																'action' => 'edit',
+																$reference['Reference_ID']
+																)
 													); 
+							echo $this->Form->postLink('Delete', array('controller' => 'References',
+																		'action' => 'delete', 
+																		$reference['Reference_ID']
+																		),
+																null,
+																'Are you sure you want to remove the reference?'
+														); 
+						} else {
+							echo $this->Html->link('Copy to this year', array('controller' => 'references',
+																'action' => 'copy',
+																$reference['Reference_ID'],
+																$data['Application']['Year']
+																)
+													);
+						}
 					?>
 				</td>
 				</tr>
 			<?php endforeach; ?>
-				
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						<?php 
+						?>
+					</td>
+				</tr>
 			</table>
 		</div>
 		<div id="tabs-help-offered">

@@ -1,2 +1,2 @@
 Assigned Sessions
-<?php debug($assignedsession)?>
+<?php //debug($assignedsession)?>

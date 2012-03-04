@@ -114,5 +114,34 @@ class ReferencesController extends AppController {
 								$this->Session->read('Current.Application'),
 								$this->Session->read('Current.Person'),
 								$this->Session->read('Filter.Year')));
-			}
+	}
+	
+/**
+ * copy method
+ * 
+ * copy the reference with id $id into a new record with year = current year
+ * 
+ * @param string $id, string $year
+ * @return void
+ */
+	public function copy($id = null, $year = null) {
+		$this->Reference->read(null, $id);
+		$this->Reference->set(array('Reference_ID' => null, 'Year' => $year));
+//			$this->Reference->create();
+		if ($this->Reference->save()) {
+			debug('New reference saved');
+			debug($this->Reference->id);
+			$this->Session->setFlash(__('The reference has been copied'));
+			$this->redirect(array('controller' => 'applications',
+												'action' => 'helper',
+												$this->Session->read('Current.Application'),
+												$this->Session->read('Current.Person'),
+												$this->Session->read('Filter.Year')));
+				
+		}
+//				$this->Session->setFlash(__('The reference has been saved'));
+//				$this->redirect(array('action' => 'index'));
+	}
+	
+	
 }
