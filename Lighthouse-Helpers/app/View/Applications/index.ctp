@@ -58,6 +58,7 @@
 	<ul>
 		<li><?php echo $this->Html->link(__('List Helpers'), array('action' => 'helperlist')); ?></li>
 		<li><?php echo $this->Html->link(__('Send Confirmations'), array('controller' => 'emails','action' => 'sendconfirmation')); ?></li>
+		<li><?php echo $this->Html->link(__('Send Reminder Emails'), array('controller' => 'emails','action' => 'sendreminder')); ?></li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>
 </div>

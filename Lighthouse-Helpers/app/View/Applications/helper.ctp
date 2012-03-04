@@ -100,10 +100,10 @@
 			<table>
 				<tr>
 					<th>Referee</th>
-					<th>Reference Status</th>
-					<th>Reference Requested Date</th>
-					<th>Reference Received Date</th>
-					<th>Reference OK</th>
+					<th>Status</th>
+					<th>Requested Date</th>
+					<th>Received Date</th>
+					<th>OK</th>
 					<th>Year</th>
 					<th>Actions</th>
 				</tr>
@@ -187,18 +187,6 @@
 				</td>
 				</tr>
 			<?php endforeach; ?>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td>
-						<?php 
-						?>
-					</td>
-				</tr>
 			</table>
 		</div>
 		<div id="tabs-help-offered">
