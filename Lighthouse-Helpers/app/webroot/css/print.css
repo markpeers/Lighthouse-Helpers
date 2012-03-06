@@ -1,0 +1,27 @@
+@CHARSET "UTF-8";
+/** CSS for printed versions of pages **/
+
+/* Remove unwanted elements */
+.actions,
+div.paging, 
+.cake-sql-log {
+	display: none;
+}
+
+/* Ensure the content spans the full width */
+div.header,
+div.form,
+div.index,
+div.view {
+	width: 100%; 
+	margin: 0; 
+	float: none;
+	border-left: 0px;
+	padding: 0;
+}
+
+/* Set font size */
+body {
+	font-size: 10px;
+}
+

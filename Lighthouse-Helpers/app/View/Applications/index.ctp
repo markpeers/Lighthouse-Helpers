@@ -1,8 +1,8 @@
 <!-- File: /app/View/Applications/index.ctp -->
 <?php //debug($summarys['NoRole']); ?>
 <?php //echo $this->element('menu1'); ?>
-<h2>Helper Summary <?php echo $this->Session->read('Filter.Year')?></h2>
 <div class="index">
+	<h2>Helper Summary - <?php echo $this->Session->read('Filter.Year')?></h2>
 	<table>
 		<tr>
 			<th>Helpers Registered</th>
@@ -35,22 +35,18 @@
 <div class="filter actions">
 <h3>Filters</h3>
 <?php echo $this->Form->create('Filter');?>
-	<table>
-		<tr>
-			<td><?php echo $this->Form->input('Year', array(
-						'options' => $this->Session->read('Filter.Years'),
-					    'default' => $this->Session->read('Filter.Year')
+	<ul>
+		<li><?php echo $this->Form->input('Year', array(
+					'options' => $this->Session->read('Filter.Years'),
+				    'default' => $this->Session->read('Filter.Year')
+				    //'empty' => '(choose one)'
+					));?></li>
+		<li><?php echo $this->Form->input('ApplicationProblem', array(
+			'options' => $summarys['problemFilterOptions'],
+		    'default' => $this->Session->read('Filter.Problem')
 					    //'empty' => '(choose one)'
-						));?></td>
-		</tr>
-		<tr>
-			<td><?php echo $this->Form->input('ApplicationProblem', array(
-				'options' => $summarys['problemFilterOptions'],
-			    'default' => $this->Session->read('Filter.Problem')
-						    //'empty' => '(choose one)'
-				));?></td>
-		</tr>
-	</table>
+			));?></li>
+	</ul>
 	<?php echo $this->Form->end('Update Filter');?>
 </div>
 <div class="actions">

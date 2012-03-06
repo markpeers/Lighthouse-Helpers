@@ -13,8 +13,10 @@ $cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 		echo $this->Html->meta('icon');
 
 		echo $this->Html->css('cake.generic');
+		echo $this->Html->css('lh-helpers');
 		echo $this->Html->css('ui-lightness/jquery-ui-1.8.16.custom');
 		echo $this->Html->css('menu1');
+		echo $this->Html->css('print', null,array('media' => 'print')); //css forprinted versions of pages
 		
 		echo $this->Html->script('jquery-1.7.min'); // Include jQuery library
 		echo $this->Html->script('jquery-ui-1.8.16.custom.min'); // Include jQuery-UI library

@@ -1,9 +1,9 @@
 <!-- File: /app/View/Applications/helperlist.ctp -->
 <!-- <?php //debug($lighthouseyears); ?> -->
-<h2>Helpers <?php echo $this->Session->read('Filter.Year');
-					echo ' ('.$problemFilterOptions[$this->Session->read('Filter.Problem')].')'?></h2>
 
 <div class="index">
+<h2>Helpers - <?php echo $this->Session->read('Filter.Year');
+					echo ' ('.$problemFilterOptions[$this->Session->read('Filter.Problem')].')'?></h2>
 <table>
     <tr>
 		<th><?php echo 'Title';?></th>
@@ -55,22 +55,18 @@
 <div class="actions">
 	<h3>Filters</h3>
 	<?php echo $this->Form->create('Filter');?>
-	<table>
-		<tr>
-			<td><?php echo $this->Form->input('Year', array(
-					    'options' => $LHYears,
-						'default' => $this->Session->read('Filter.Year')
+	<ul>
+		<li><?php echo $this->Form->input('Year', array(
+				    'options' => $LHYears,
+					'default' => $this->Session->read('Filter.Year')
+				    //'empty' => '(choose one)'
+					));?></li>
+		<li><?php echo $this->Form->input('ApplicationProblem', array(
+			'options' => $problemFilterOptions,
+		    'default' => $this->Session->read('Filter.Problem')
 					    //'empty' => '(choose one)'
-						));?></td>
-		</tr>
-		<tr>
-			<td><?php echo $this->Form->input('ApplicationProblem', array(
-				'options' => $problemFilterOptions,
-			    'default' => $this->Session->read('Filter.Problem')
-						    //'empty' => '(choose one)'
-				));?></td>
-		</tr>
-	</table>
+			));?></li>
+	</ul>
 	<?php echo $this->Form->end('Update Filter');?>
 	
 	<h3>Helper Search</h3>	

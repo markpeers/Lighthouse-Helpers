@@ -2,13 +2,14 @@
 
 <?php //debug($data) ?>
 <div class="index">
+<h2>Helper Details - <?php echo $data['Person']['Nickname'].' '.$data['Person']['Last_Name'];?></h2>
 	<table>
 		<tr>
 			<th>
-			<?php echo	'Helper: '.$data['Person']['Nickname'].' '.$data['Person']['Last_Name'];?>
+			<?php echo 'Application Number: '.$data['Application']['Application_ID']; ?>
 			</th>
 			<th>
-			<?php echo 'Number: '.$data['Application']['Application_ID']; ?>
+			<?php echo 'Badge Number: '.$data['Person']['Person_ID']; ?>
 			</th>
 			<th>
 			<?php echo 'Year: '.$data['Application']['Year']; ?>

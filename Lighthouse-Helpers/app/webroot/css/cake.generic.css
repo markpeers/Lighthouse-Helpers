@@ -53,14 +53,12 @@ h2 {
 	background:#fff;
 	color: #e32;
 	font-family:'Gill Sans','lucida grande', helvetica, arial, sans-serif;
-/**	font-size: 190%; **/
-	font-size: 150%;
+	font-size: 190%;
 }
 h3 {
 	color: #2c6877;
 	font-family:'Gill Sans','lucida grande', helvetica, arial, sans-serif;
-/**	font-size: 165%; **/
-	font-size: 125%;
+	font-size: 165%;
 }
 h4 {
 	color: #993;
@@ -98,15 +96,12 @@ p {
 	background: #003d4c;
 	text-decoration: underline;
 }
-#content {
+#content{
 	background: #fff;
 	clear: both;
 	color: #333;
 	padding: 10px 20px 40px 20px;
 	overflow: auto;
-}
-#menu {
-	clear: both;
 }
 #footer {
 	clear: both;
@@ -137,7 +132,6 @@ div.actions h3 {
 /** Tables **/
 table {
 	border-right:0;
-	border-spacing:0;
 	clear: both;
 	color: #333;
 	margin-bottom: 10px;
@@ -173,8 +167,7 @@ td.actions {
 	text-align: center;
 	white-space: nowrap;
 }
-table td.actions a,
-table td.actions button {
+table td.actions a {
 	margin: 0px 6px;
 	padding:2px 5px;
 }
@@ -317,7 +310,7 @@ label {
 }
 input, textarea {
 	clear: both;
-	font-size: 100%;
+	font-size: 140%;
 	font-family: "frutiger linotype", "lucida grande", "verdana", sans-serif;
 	padding: 1%;
 	width:98%;
@@ -512,7 +505,6 @@ p.error em {
 /* Buttons and button links */
 input[type=submit],
 .actions ul li a,
-.actions button,
 .actions a {
 	font-weight:normal;
 	padding: 4px 8px;
@@ -538,7 +530,6 @@ input[type=submit],
 	user-select: none;
 }
 .actions ul li a:hover,
-.actions button:hover,
 .actions a:hover {
 	background: #ededed;
 	border-color: #acacac;
@@ -546,7 +537,6 @@ input[type=submit],
 }
 input[type=submit]:active,
 .actions ul li a:active,
-.actions button:active,
 .actions a:active {
 	background: #eee;
 	background-image: -webkit-gradient(linear, left top, left bottom, from(#dfdfdf), to(#eee));
