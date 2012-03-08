@@ -1,6 +1,7 @@
 <!-- File: /app/View/Application/helper.ctp -->
 
 <?php //debug($data) ?>
+<?php //debug($crbs) ?>
 <div class="index">
 <h2>Helper Details - <?php echo $data['Person']['Nickname'].' '.$data['Person']['Last_Name'];?></h2>
 	<table>
@@ -119,13 +120,13 @@
 				<td><?php echo $reference['Referee']['Title'].' '.$reference['Referee']['First_Name'].' '.$reference['Referee']['Last_Name'];?></td>
 				<td><?php switch ($reference['Reference_Status']){
 														case 1:
-														  echo 'Not requested';
+														  echo 'Not Required';
 														  break;
 														case 2:
-														  echo 'Requested';
+														  echo 'Send Request';
 														  break;
 														case 3:
-														  echo 'Awaiting reply';
+														  echo 'Awaiting Reply';
 														  break;
 														case 4:
 														  echo 'Received';
@@ -504,7 +505,13 @@
 		</div>
 		<div id="tabs-crb">
 			<table>
-				<tr><th>CRB Disclosure</th><th></th><th>Actions</th></tr>
+				<tr>
+					<th>Disclosure Number</th>
+					<th>Disclosure Date</th>
+					<th>Notes</th>
+					<th>Year</th>
+					<th>Actions</th>
+				</tr>
 				<?php
 					$editbutton = '<td class="actions">'. $this->Html->link('Edit', array('action' => 'editcrb', 
 																							$data['Application']['Application_ID']
@@ -513,54 +520,102 @@
 					
 				 	switch ($data['Application']['CRB']){
 														case 0:
-														  echo '<tr><td>Not Required</td><td></td>'.$editbutton.'</tr>';
+														  echo '<tr>
+														  			<td>Not Required</td>
+														  			<td></td>
+														  			<td></td>
+														  			<td>'.$data['Application']['Year'].'</td>'.$editbutton.'
+														  		</tr>';
 														  break;
 														case 1:
-														  echo '<tr><td>None</td><td></td>'.$editbutton.'</tr>';
+														  echo '<tr>
+														  			<td>None</td>
+														  			<td></td>
+														  			<td></td>
+														  			<td>'.$data['Application']['Year'].'</td>'.$editbutton.'
+														  		</tr>';
 														  break;
 														case 2:
-														  echo ''; //Yes
+														  echo '<tr>
+														  			<td>'.$data['Application']['CRB_number'].'</td>
+														  			<td>'.date('jS F Y',strtotime($data['Application']['CRB_date'])).'</td>
+														  			<td>'.$data['Application']['CRB_note'].'</td>
+														  			<td>'.$data['Application']['Year'].'</td>'.$editbutton.'
+														  		</tr>';
 														  break;
 														case 3:
-														  echo '<tr><td>Applied For</td><td></td>'.$editbutton.'</tr>';
+														  echo '<tr>
+														  			<td>Applied For</td>
+														  			<td></td>
+														  			<td></td>
+														  			<td>'.$data['Application']['Year'].'</td>'.$editbutton.'
+														  		</tr>';
 														  break;
 														default:
-														  echo '<tr><td>Should never get here</td><td></td>'.$editbutton.'</tr>';
+														  echo '<tr>
+																	<td>Should never get here</td>
+																	<td></td>
+																	<td></td>
+																	<td>'.$data['Application']['Year'].'</td>'.$editbutton.'
+																</tr>';
 														} ;
-					if ($data['Application']['CRB'] == 2) {
-							echo '<tr><td>Type: '; 
-							echo '<br/>Date: ';
-							echo '<br/>Number: ';
-							echo '</td><td>';
-							switch ($data['Application']['CRB_type']){
-																case 0:
-																  echo 'None';
-																  break;
-																case 1:
-																  echo 'Basic';
-																  break;
-																case 2:
-																  echo 'Standard';
-																  break;
-																case 3:
-																  echo 'Enhanced';
-																  break;
-																case 4:
-																  echo 'Lighthouse';
-																  break;
-																default:
-																  echo 'Should never get here';
-																} ;
-							echo '<br/>';
-							echo date('jS F Y',strtotime($data['Application']['CRB_date']));
-							echo '<br/>';
-							echo $data['Application']['CRB_number'];
-							echo '</td>'.$editbutton.'</tr>';
-							echo '<tr><td>CRB Notes:</td><td>';
-							echo $data['Application']['CRB_note'];
-							echo '</td></tr>';
-				 		} 
-				 ?>
+				//check if there are any old crb records
+				if (!empty($crbs)) {
+					//add a blank header line to sepeate this year from previous years
+					echo '<tr><th></th><th></th><th></th><th></th><th></th></tr>';
+				
+					//add the crb info from previous years - its in $crbs
+					foreach ($crbs as $crb) :
+						$copybutton = '<td class="actions">'. $this->Html->link('Copy to this year', array('action' => 'copycrb', 
+																								$data['Application']['Application_ID'],
+																								$crb['Application']['Application_ID']
+																								)
+																				). '</td>';
+					
+				 		switch ($crb['Application']['CRB']){
+														case 0:
+														  echo '<tr>
+														  			<td>Not Required</td>
+														  			<td></td>
+														  			<td></td>
+														  			<td>'.$crb['Application']['Year'].'</td>'.$copybutton.'
+														  		</tr>';
+														  break;
+														case 1:
+														  echo '<tr>
+														  			<td>None</td>
+														  			<td></td>
+														  			<td></td>
+														  			<td>'.$crb['Application']['Year'].'</td>'.$copybutton.'
+														  		</tr>';
+														  break;
+														case 2:
+														  echo '<tr>
+														  			<td>'.$crb['Application']['CRB_number'].'</td>
+														  			<td>'.date('jS F Y',strtotime($crb['Application']['CRB_date'])).'</td>
+														  			<td>'.$crb['Application']['CRB_note'].'</td>
+														  			<td>'.$crb['Application']['Year'].'</td>'.$copybutton.'
+														  		</tr>';
+														  break;
+														case 3:
+														  echo '<tr>
+														  			<td>Applied For</td>
+														  			<td></td>
+														  			<td></td>
+														  			<td>'.$crb['Application']['Year'].'</td>'.$copybutton.'
+														  		</tr>';
+														  break;
+														default:
+														  echo '<tr>
+																	<td>Should never get here</td>
+																	<td></td>
+																	<td></td>
+																	<td>'.$crb['Application']['Year'].'</td>'.$copybutton.'
+																</tr>';
+														} ;
+					endforeach;
+				}
+				?>
 			</table>
 		</div>
 		<div id="tabs-lh-address">

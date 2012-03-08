@@ -129,8 +129,8 @@ class ReferencesController extends AppController {
 		$this->Reference->set(array('Reference_ID' => null, 'Year' => $year));
 //			$this->Reference->create();
 		if ($this->Reference->save()) {
-			debug('New reference saved');
-			debug($this->Reference->id);
+//			debug('New reference saved');
+//			debug($this->Reference->id);
 			$this->Session->setFlash(__('The reference has been copied'));
 			$this->redirect(array('controller' => 'applications',
 												'action' => 'helper',

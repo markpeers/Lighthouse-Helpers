@@ -130,7 +130,7 @@ class EmailsController extends AppController {
 																'order'=>array('Application.Year DESC')
 																)));
 		$helpers = $this->Person->find('all', array('fields' => array('Person.Nickname', 'Person.email', 'Person.full_name')
-//													,'limit' => 10 //comment out limit on live system
+													,'limit' => 10 //comment out limit on live system
 													));
 //		debug('Total helpers: '.count($helpers));
 		foreach ($helpers as $helper) : // iterate through all helpers to find ones with only one application, maybe this year or last year

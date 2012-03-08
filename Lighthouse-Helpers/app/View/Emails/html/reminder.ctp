@@ -1,11 +1,22 @@
 
-<p>Dear <?php echo $helpername; ?></p>
-<p>Thank you for helping at Lighthouse GM last summer, we hope you enjoyed it.</p>
-<p>We are now registering helpers for this year and hope that you will be able to help again. The date of Lighthouse <?php echo $lhyear;?> is from 23rd to 27th July. If you can help please register on line now!!</p>
-<p>To register online go to the <a href="http://www.lighthousemissenden.org.uk">Lighthouse Great Missenden website</a> and follow the link "2012 Helper's Registration" in the Quick Links section and follow the instructions on the web page.</p>
-<p>You will need your badge number which is <strong><?php echo $badgenumber;?></strong> and your post code.</p>
-<p>If you have any queries, please contact us quoting your badge number.</p>
-<p>Thankyou for your support and we look forward to seeing you again at Lighthouse <?php echo $lhyear;?>.</p> 
-<p>Lighthouse Helper's Registration Team</p>
+<p>Dear <?php echo $helpername; ?>,</p>
+<p>Thank you very much for helping at Lighthouse last year, we hope you enjoyed it. 
+The children had a very good time, the weather was ideal, and we all shared God's love.</p>
+<p>Registration for 2012 is open. Registering now saves Lighthouse and the volunteers 
+involved time and money. Last year it cost about 40p to send out each printed paper form with 
+your details on to be checked and signed. To register online all you need to have is your 
+badge number (<strong><?php echo $badgenumber;?></strong>) and your post code. Go to the 
+<a href="http://www.lighthousemissenden.org.uk">Lighthouse Great Missenden website</a>, click on 
+the link "<?php echo $lhyear;?> Helper's Registration" in the Quick Links section and follow the 
+instructions. All your details from last year will be there.</p>
+<p>If you register and then circumstances change and you are no longer able to help we can remove 
+your registration. All we ask for you to advise us of this by emailing 
+<a href="mailto:helpers@lighthousemissenden.org.uk">helpers@lighthousemissenden.org.uk</a>, or 
+calling 01494 868974 and speaking to Sarah Keeble.</p>
+<p>If you need a paper form, or know someone who needs one, please contact us at the above address 
+or number.</p>
+<p>Your help at lighthouse is always appreciated, please register.</p>
+<p>Kind regards</p>
+<p>Helpers Registration Team</p>
 
  

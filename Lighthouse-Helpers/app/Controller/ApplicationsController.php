@@ -346,10 +346,10 @@ class ApplicationsController extends AppController {
 
 		//debug('Test');
 		$lastyear = $year - 1;
+		//define what associated data is required from other tables
 		$this->Application->contain(array('Person',
 										'Person.Church',
 										'Person.RefereeTemp' => array('conditions' => array('RefereeTemp.Year = ' => $year)),
-//										'Person.RefereeTemp.year = '.$year,
 										'Person.Reference.Referee',
 										'Person.Reference' => array('conditions' => array('Reference.Year ' => array($year, $year - 1)),
 																	'order' => array('Reference.Year DESC')),
@@ -361,10 +361,27 @@ class ApplicationsController extends AppController {
 										'AssignedRole.Role',
 										'AssignedRole.AssignedSession',
 										'AssignedRole.AssignedSession.Session'));
+		//get the application record and all associated data
 		$application = $this->Application->find('first',
- 				array('conditions' => array('Application.Application_ID' => $application_id )
-					));
-				
+ 				array('conditions' => array('Application.Application_ID' => $application_id )));
+		
+		//get crb data from application records from previous years for this helper
+		$crbs = $this->Application->find('all', 
+				array('conditions' => array('Application.tblPerson_Person_ID' => $person_id,
+											'Application.Year < ' => $year
+											),
+						'fields' => array(	'Application.Application_ID', 
+											'Application.Year', 
+											'Application.CRB',
+											'Application.CRB_date',
+											'Application.CRB_note',
+											'Application.CRB_number'
+											),
+						'order' => array('Application.Year DESC'
+											),
+						'recursive' => 0));
+		
+		$this->set('crbs', $crbs);
 		$this->set('data', $application);
 	}
 	
@@ -417,7 +434,56 @@ class ApplicationsController extends AppController {
 		
 		$this->set('crbValidYears', $this->crbValidYears);
 	}
+	
+	/**
+	* copycrb method
+	*
+	* copys the crb fields from previous year's application to current application
+	* then returns to calling page
+	* 
+	* @param string $to_id, string $from_id
+	* @return void
+	*/
+	public function copycrb($to_id = null, $from_id = null) {
+		$this->Application->id = $from_id;
+		//check old application exists
+		if (!$this->Application->exists()) {
+			throw new NotFoundException(__('Invalid reference'));
+		}
+		$crbfields =  array('Application.CRB',
+							'Application.CRB_date',
+							'Application.CRB_note',
+							'Application.CRB_number');
+		//get crb fields from old application
+ 		$oldapplication = $this->Application->find('first', array('conditions' => array('Application.Application_ID' => $from_id),
+ 																	'fields' => $crbfields,
+ 																	'recursive' => 0));
+		//debug($oldapplication);
+		
+		$this->Application->id = $to_id;
+		//check current application exists
+		if (!$this->Application->exists()) {
+			throw new NotFoundException(__('Invalid reference'));
+		}
+		//copy crb from old record to current application
+		$this->Application->set(array('CRB' => $oldapplication['Application']['CRB'],
+										'CRB_date' => $oldapplication['Application']['CRB_date'],
+										'CRB_note' => $oldapplication['Application']['CRB_note'],
+										'CRB_number' => $oldapplication['Application']['CRB_number']));
+		if ($this->Application->save()) {
+			$this->Session->setFlash(__('The application CRB details have been copied'));
+		} else {
+			$this->Session->setFlash(__('The application CRB details could not be saved. Please, try again.'));
+		}
+		//go back to calling page
+		$this->redirect(array('controller' => 'applications',
+							'action' => 'helper',
+							$this->Session->read('Current.Application'),
+							$this->Session->read('Current.Person'),
+							$this->Session->read('Filter.Year')));
+	}
     
+	
 	public function test($id = null) {
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];

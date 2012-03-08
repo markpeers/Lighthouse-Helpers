@@ -8,9 +8,9 @@
 		echo $this->Form->hidden('tblPerson_Person_ID');
 		echo $this->Form->input('tblReferee_Referee_ID', array('options' => $referees, 'label' => 'Referee'));
 		echo $this->Form->hidden('Year');
-		echo $this->Form->input('Reference_Status',array('options'=> array(	1 => 'Not requested',
-														  					2 => 'Requested',
-																			3 => 'Awaiting reply',
+		echo $this->Form->input('Reference_Status',array('options'=> array(	1 => 'Not Required',
+														  					2 => 'Send Request',
+																			3 => 'Awaiting Reply',
 																			4 => 'Received')));
 		echo $this->Form->input('Reference_Requested_Date', array('dateFormat' => 'DMY', 
 																'timeFormat' => null, 

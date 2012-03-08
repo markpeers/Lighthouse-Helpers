@@ -14,7 +14,7 @@
 	</tr>
 	<?php endforeach;?>
 </table>
-<p>If you have any queries, please contact us as soon as possible quoting your application reference number - <?php echo $application_id?>.</p>
+<p>If you have any queries, please contact us at <a href="mailto:helpers@lighthousemissenden.org.uk">helpers@lighthousemissenden.org.uk</a> as soon as possible quoting your application reference number - <?php echo $application_id?>.</p>
 <p>Lighthouse Helper's Registration Team</p>
 
  

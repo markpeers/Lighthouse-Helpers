@@ -15,6 +15,7 @@
 	</style>
 </head>
 <body>
+<p><strong>LIGHTHOUSE 2012 - Our 25th Anniversary - 23rd to 27th July 2012</strong></p>
 	<?php echo $content_for_layout;?>
 
 </body>

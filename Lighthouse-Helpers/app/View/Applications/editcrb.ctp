@@ -10,13 +10,14 @@
 																	1 => 'None',
 																	2 => 'Yes',
 																	3 => 'Applied for')));
-		echo $this->Form->input('CRB_type', array('label' => 'CRB Type',
+//removed CRB type as its no longer used		
+/* 		echo $this->Form->input('CRB_type', array('label' => 'CRB Type',
 												'options' => array(0 => 'None',
 																	1 => 'Basic',
 																	2 => 'Standard',
 																	3 => 'Enhanced',
 																	4 => 'Lighthouse')));
-		
+ */		
 		echo $this->Form->input('CRB_date', array('dateFormat' => 'DMY', 
 													'timeFormat' => null, 
 													'separator' => ' / ',
