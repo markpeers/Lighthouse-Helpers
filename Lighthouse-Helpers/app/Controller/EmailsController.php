@@ -9,7 +9,7 @@ class EmailsController extends AppController {
 	);
 	public $name = 'Emails';
 	
-	private $testmode = true; //with this set to true all emails are send to 'g8hyp@peers.org.uk'=>'Fred Bloggs'
+	private $testmode = false; //with this set to true all emails are send to 'g8hyp@peers.org.uk'=>'Fred Bloggs'
 	private $emailhandler = 'smtp'; //set the email handler, 'debug', 'smtp' (running on laptop), 'default' (running on server) 
 
 	public function sendconfirmation() { //send confirmation emails
@@ -86,6 +86,7 @@ class EmailsController extends AppController {
 										'application_id' => $confirmation['Application']['Application_ID'],
 										'roles'=>$confirmationdetails));
 						if ($email->send()) { // send email and if successfull
+							$this->log(__('Confirmation email sent to %s (%s)',$confirmation['Person']['full_name'],$confirmation['Person']['email']),'email');
 							//update the application record to show confirmation has been sent
 							$this->Application->id = $confirmation['Application']['Application_ID'];
 							$this->Application->set(array('Confirmation_email_sent' => -1,
@@ -93,6 +94,7 @@ class EmailsController extends AppController {
 							$this->Application->save();							
 							$results['sent'] += 1; //increment the number of sent emails
 						} else { //send failed
+							$this->log(__('Confirmation email failed to %s (%s)',$confirmation['Person']['full_name'],$confirmation['Person']['email']),'email');
 //							debug('Send failed');
 							$results['failed'] += 1; //increment the number of failed emails
 						} 
@@ -111,6 +113,7 @@ class EmailsController extends AppController {
 				$flashmessage = $flashmessage.'  -  Invalid email addresses: '.$results['invalidemail'];
 			}
 			$this->Session->setFlash($flashmessage); //set flashmessage
+			$this->log(__('%s',$flashmessage),'email');
 			$this->redirect(array('controller' => 'applications', 'action' => 'index')); //go to summary page
 		} else { //request was a get so display a list of confirmations to send
 			$this->set('data', $confirmations); 
@@ -130,7 +133,8 @@ class EmailsController extends AppController {
 																'order'=>array('Application.Year DESC')
 																)));
 		$helpers = $this->Person->find('all', array('fields' => array('Person.Nickname', 'Person.email', 'Person.full_name')
-													,'limit' => 10 //comment out limit on live system
+//													,'limit' => 10 //comment out limit on live system
+//													,'conditions' => array('Person.Person_ID > ' => 10261)
 													));
 //		debug('Total helpers: '.count($helpers));
 		foreach ($helpers as $helper) : // iterate through all helpers to find ones with only one application, maybe this year or last year
@@ -173,15 +177,18 @@ class EmailsController extends AppController {
 											'badgenumber' => $sendreminder['Person']['Person_ID'],
 											'lhyear' => $lhyear));
 						if ($email->send()) {
+							$this->log(__('Reminder email sent to %s (%s)',$sendreminder['Person']['full_name'],$sendreminder['Person']['email']),'email');
 							// send email and if successfull
 							$results['sent'] += 1; //increment the number of sent emails
 //							debug($results['sent']);
 						} else { //send failed
+							$this->log(__('Reminder email failed (system) to %s (%s)',$sendreminder['Person']['full_name'],$sendreminder['Person']['email']),'email');
 //							debug('Send failed');
 							$results['failed'] += 1; //increment the number of failed emails
 //							debug($results['failed']);
 						}
 					} else { //helper has no valid email address
+						$this->log(__('Reminder email failed (invalid email address) to %s (%s)',$sendreminder['Person']['full_name'],$sendreminder['Person']['email']),'email');
 //						debug('invalid email');
 						$results['invalidemail'] += 1; //increment the number of invalid email addresses
 //						debug($results['invalidemail']);
@@ -197,6 +204,7 @@ class EmailsController extends AppController {
 				$flashmessage = $flashmessage.'  -  Invalid email addresses: '.$results['invalidemail'];
 			}
 			$this->Session->setFlash($flashmessage); //set flashmessage
+			$this->log(__('%s',$flashmessage),'email');
 			$this->redirect(array('controller' => 'applications', 'action' => 'index')); //go to summary page
 		} else { //request was a get so display a list of confirmations to send
 			$this->set('data', count($sendreminders));

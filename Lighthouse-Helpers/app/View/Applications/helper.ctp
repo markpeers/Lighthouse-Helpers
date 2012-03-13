@@ -2,8 +2,14 @@
 
 <?php //debug($data) ?>
 <?php //debug($crbs) ?>
+<?php //debug($next_application) ?>
+<?php //debug($previous_application) ?>
 <div class="index">
-<h2>Helper Details - <?php echo $data['Person']['Nickname'].' '.$data['Person']['Last_Name'];?></h2>
+<h2>Helper Details - <?php echo $data['Person']['First_Name']; 
+							if (!($data['Person']['First_Name'] == $data['Person']['Nickname'])) {
+								echo ' ('.$data['Person']['Nickname'].')';
+							}
+							echo ' '.$data['Person']['Last_Name'];?></h2>
 	<table>
 		<tr>
 			<th>
@@ -44,6 +50,9 @@
 					echo $data['Person']['Town'].'<br/>'.
 					$data['Person']['County'].'<br/>'.
 					$data['Person']['Post_Code'];?>
+					</td>
+					<td class="actions">
+						<?php echo $this->Html->link('Edit', array('controller' => 'people', 'action' => 'edit', $data['Person']['Person_ID'])); ?>
 					</td>
 				</tr>
 				<tr>
@@ -698,6 +707,33 @@
 			?>
 			</table>
 		</div>
+	</div>
+	<div class="paging">
+	<?php
+		//links for next and previous application 
+		if ($previous_application == null) {
+			echo $this->Html->tag('span','< ' . __('previous application'),'prev disabled');
+		} else {
+			echo $this->Html->tag('span',
+								$this->Html->link('< ' . __('previous application'),
+													array(	'action' => 'helper', 
+															$previous_application['application_id'],
+															$previous_application['person_id'], 
+															$previous_application['year'])), 
+													'prev');
+		}
+		if ($next_application == null) {
+			echo $this->Html->tag('span', __('next application') . ' >','next disabled');
+		} else {
+			echo $this->Html->tag('span',
+								$this->Html->link( __('next application') . ' >',
+													array(	'action' => 'helper', 
+															$next_application['application_id'],
+															$next_application['person_id'], 
+															$next_application['year'])), 
+													'next');
+		}
+	?>
 	</div>
 </div>
 

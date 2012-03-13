@@ -28,6 +28,7 @@ class ApplicationsController extends AppController {
 			'Person.Person_ID',
 			'Person.Title',
 			'Person.First_Name',
+			'Person.Nickname',
 			'Person.Last_Name'
 			)
 	);
@@ -327,6 +328,36 @@ class ApplicationsController extends AppController {
 			case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($lhyear));	break; //applications with no CRB
 			default:
 		}
+		
+		//build an array with next and previous applications for each application
+		$this->Application->contain(array('Person' => array('fields' => array('First_Name','Last_Name'))));
+		$filtered_applications = $this->Application->find('all', array('conditions' => $conditions,
+																						'fields' => array('Application.Application_ID',
+																											'Application.tblPerson_Person_ID',
+																											'Application.Year'),
+																						'recursive' => 1,
+																						'order' => array('Person.Last_Name',
+																										'Person.First_Name')));
+			//for each filtered application returned, find preveious and next and add to the array
+			for ($i = 0; $i < count($filtered_applications); $i++) {
+				if ($i < count($filtered_applications) - 1) {
+					$filtered_applications[$i]['next_application']['application_id'] = $filtered_applications[$i + 1]['Application']['Application_ID'];
+					$filtered_applications[$i]['next_application']['person_id'] = $filtered_applications[$i + 1]['Application']['tblPerson_Person_ID'];
+					$filtered_applications[$i]['next_application']['year'] = $filtered_applications[$i + 1]['Application']['Year'];
+				} else {
+					$filtered_applications[$i]['next_application'] = null;
+				}
+				if ($i > 0) {
+					$filtered_applications[$i]['previous_application']['application_id'] = $filtered_applications[$i - 1]['Application']['Application_ID'];
+					$filtered_applications[$i]['previous_application']['person_id'] = $filtered_applications[$i - 1]['Application']['tblPerson_Person_ID'];
+					$filtered_applications[$i]['previous_application']['year'] = $filtered_applications[$i - 1]['Application']['Year'];
+				} else {
+					$filtered_applications[$i]['previous_application'] = null;
+				}
+			}
+		//debug($filtered_applications);
+		$this->Session->write('FilterdApplications', $filtered_applications);
+		
 		$this->paginate['conditions'] = $conditions;
 
 		$this->set('LHYears', $lhyears);
@@ -334,56 +365,145 @@ class ApplicationsController extends AppController {
 		$this->set('applications', $this->paginate());
 	}
 
-	public function helper($application_id = null, $person_id = null, $year = null) {
-		if ($year==null) {
-			$sessiondata = $this->getsessiondata();
-			$year = $sessiondata['lhyear'];
-		}
-		
-		//write current application_id to the session
-		$this->Session->write('Current.Application', $application_id);
-		$this->Session->write('Current.Person', $person_id);
+	public function helper($application_id = null, $person_id = null, $year = null, $offset = null) {
+//		if ($offset==null) {
+			if ($year==null) {
+				$sessiondata = $this->getsessiondata();
+				$year = $sessiondata['lhyear'];
+			}
+			
+			//write current application_id to the session
+			$this->Session->write('Current.Application', $application_id);
+			$this->Session->write('Current.Person', $person_id);
 
-		//debug('Test');
-		$lastyear = $year - 1;
-		//define what associated data is required from other tables
-		$this->Application->contain(array('Person',
-										'Person.Church',
-										'Person.RefereeTemp' => array('conditions' => array('RefereeTemp.Year = ' => $year)),
-										'Person.Reference.Referee',
-										'Person.Reference' => array('conditions' => array('Reference.Year ' => array($year, $year - 1)),
-																	'order' => array('Reference.Year DESC')),
-										'OfferedRole',
-										'OfferedRole.Role',
-										'OfferedRole.OfferedSession',
-										'OfferedRole.OfferedSession.Session',
-										'AssignedRole',
-										'AssignedRole.Role',
-										'AssignedRole.AssignedSession',
-										'AssignedRole.AssignedSession.Session'));
-		//get the application record and all associated data
-		$application = $this->Application->find('first',
- 				array('conditions' => array('Application.Application_ID' => $application_id )));
-		
-		//get crb data from application records from previous years for this helper
-		$crbs = $this->Application->find('all', 
-				array('conditions' => array('Application.tblPerson_Person_ID' => $person_id,
-											'Application.Year < ' => $year
-											),
-						'fields' => array(	'Application.Application_ID', 
-											'Application.Year', 
-											'Application.CRB',
-											'Application.CRB_date',
-											'Application.CRB_note',
-											'Application.CRB_number'
-											),
-						'order' => array('Application.Year DESC'
-											),
-						'recursive' => 0));
-		
-		$this->set('crbs', $crbs);
-		$this->set('data', $application);
-	}
+			//find applications before and after current application
+			//this depends on the filter setting, so get list of applications matching the filter
+/* 			switch ($this->Session->read('Filter.Problem')) {
+				case 0: $conditions = array('Application.Year'=> $year); break; //all applications
+				case 1: $conditions = array('Application.Application_ID ' => $this->referenceAttention($year)); break; //applications with no reference
+				case 2: $conditions = array('Application.Application_ID ' => $this->noRole($year)); break; //applications with no role assigned
+				case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($year));	break; //applications with no CRB
+				default:
+			}
+ */			//			debug($conditions);
+			//also need helpers name so that the application before and after can be in alphabeticalorder 
+/* 			$this->Application->contain(array('Person' => array('fields' => array('First_Name',
+																								'Last_Name'))));
+			$applications = $this->Application->find('all', array('conditions' => $conditions,
+																				'fields' => array('Application.Application_ID',
+																									'Application.tblPerson_Person_ID',
+																									'Application.Year'),
+																				'recursive' => 1,
+																				'order' => array('Person.Last_Name',
+																								'Person.First_Name')));
+ */			//			debug($applications);
+/* 			$next_application = null;
+			$previous_application = null;
+			for ($i = 0; $i < count($applications); $i++) {
+				if ($applications[$i]['Application']['Application_ID'] == $application_id) {
+					//debug($i);
+					if ($i < count($applications) - 1) {
+						$next_application['application_id'] = $applications[$i + 1]['Application']['Application_ID'];
+ 						$next_application['person_id'] = $applications[$i + 1]['Application']['tblPerson_Person_ID'];
+						$next_application['year'] = $applications[$i + 1]['Application']['Year'];
+					}
+					if ($i > 0) {
+						$previous_application['application_id'] = $applications[$i - 1]['Application']['Application_ID'];
+						$previous_application['person_id'] = $applications[$i - 1]['Application']['tblPerson_Person_ID'];
+						$previous_application['year'] = $applications[$i - 1]['Application']['Year'];
+					}
+					break;
+				}
+			}
+ */	
+			foreach ($this->Session->read('FilterdApplications') as $filteredapplication) :
+				if ($filteredapplication['Application']['Application_ID'] == $application_id) {
+					$next_application = $filteredapplication['next_application'];
+					$previous_application = $filteredapplication['previous_application'];
+					break;
+					}
+			endforeach;
+					
+			$this->set('next_application', $next_application);
+			$this->set('previous_application', $previous_application);
+			
+			//			debug($next_application);
+					
+			//debug('Test');
+			$lastyear = $year - 1;
+			//define what associated data is required from other tables
+			$this->Application->contain(array('Person',
+											'Person.Church',
+											'Person.RefereeTemp' => array('conditions' => array('RefereeTemp.Year = ' => $year)),
+											'Person.Reference.Referee',
+											'Person.Reference' => array('conditions' => array('Reference.Year ' => array($year, $year - 1)),
+																		'order' => array('Reference.Year DESC')),
+											'OfferedRole',
+											'OfferedRole.Role',
+											'OfferedRole.OfferedSession',
+											'OfferedRole.OfferedSession.Session',
+											'AssignedRole',
+											'AssignedRole.Role',
+											'AssignedRole.AssignedSession',
+											'AssignedRole.AssignedSession.Session'));
+			//get the application record and all associated data
+			$application = $this->Application->find('first',
+	 				array('conditions' => array('Application.Application_ID' => $application_id )));
+			
+			//get crb data from application records from previous years for this helper
+			$crbs = $this->Application->find('all', 
+					array('conditions' => array('Application.tblPerson_Person_ID' => $person_id,
+												'Application.Year < ' => $year
+												),
+							'fields' => array(	'Application.Application_ID', 
+												'Application.Year', 
+												'Application.CRB',
+												'Application.CRB_date',
+												'Application.CRB_note',
+												'Application.CRB_number'
+												),
+							'order' => array('Application.Year DESC'
+												),
+							'recursive' => 0));
+			
+			$this->set('crbs', $crbs);
+			$this->set('data', $application);
+/* 		} else { //$offset is set so find next or previous application and call helper again with new application
+			//find applications that mtch the curent filter and get application ID and person id
+			switch ($this->Session->read('Filter.Problem')) {
+				case 0: $conditions = array('Application.Year'=> $year); break; //all applications
+				case 1: $conditions = array('Application.Application_ID ' => $this->referenceAttention($year)); break; //applications with no reference
+				case 2: $conditions = array('Application.Application_ID ' => $this->noRole($year)); break; //applications with no role assigned
+				case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($year));	break; //applications with no CRB
+				default:
+			}
+//			debug($conditions);
+			$this->Application->contain(array('Person' => array('fields' => array('First_Name',
+																					'Last_Name'))));
+			$applications = $this->Application->find('all', array('conditions' => $conditions,
+																	'fields' => array('Application.Application_ID',
+																						'Application.tblPerson_Person_ID',
+																						'Application.Year'),
+																	'recursive' => 1,
+																	'order' => array('Person.Last_Name',
+																					'Person.First_Name')));
+//			debug($applications);
+			for ($i = 0; $i < count($applications); $i++) {
+				if ($applications[$i]['Application']['Application_ID'] == $application_id) {
+					$next_application['application_id'] = $applications[$i + $offset]['Application']['Application_ID'];
+					$next_application['person_id'] = $applications[$i + $offset]['Application']['tblPerson_Person_ID'];
+					$next_application['year'] = $applications[$i + $offset]['Application']['Year'];
+					break;
+				}
+			}
+//			debug($next_application);
+			$this->redirect(array('controller' => 'applications',
+									'action' => 'helper',
+									$next_application['application_id'],
+									$next_application['person_id'],
+									$next_application['year']));
+		}
+ */	}
 	
     
 	public function editnotes($application_id = null) {
@@ -476,13 +596,32 @@ class ApplicationsController extends AppController {
 			$this->Session->setFlash(__('The application CRB details could not be saved. Please, try again.'));
 		}
 		//go back to calling page
-		$this->redirect(array('controller' => 'applications',
-							'action' => 'helper',
-							$this->Session->read('Current.Application'),
-							$this->Session->read('Current.Person'),
-							$this->Session->read('Filter.Year')));
+		$this->redirect($this->referer());
 	}
-    
+
+	/**
+	* delete method
+	*
+	* @param string $id
+	* @return void
+	*/
+	public function delete($id = null) {
+		if (!$this->request->is('post')) {
+			throw new MethodNotAllowedException();
+		}
+		$this->Application->id = $id;
+		if (!$this->Application->exists()) {
+			throw new NotFoundException(__('Invalid Application'));
+		}
+		if ($this->Application->delete()) {
+			$this->Session->setFlash(__('Application deleted'));
+			//go back to helper list page
+			$this->redirect(array('action' => 'helperlist'));
+		}
+		$this->Session->setFlash(__('Application was not deleted'));
+		$this->redirect($this->referer());
+	}
+	
 	
 	public function test($id = null) {
 		$sessiondata = $this->getsessiondata();

@@ -19,6 +19,34 @@ class PeopleController extends AppController {
     function index() {
 		$this->set('people', $this->paginate());
     }
+    
+    public function edit($id = null) {
+    	
+    	$this->Person->id = $id;
+    	if (!$this->Person->exists()) {
+    		throw new NotFoundException(__('Invalid person'));
+    	}
+    	if ($this->request->is('post') || $this->request->is('put')) {
+    		if ($this->Person->save($this->request->data)) {
+    			$this->Session->setFlash(__('The helper details have been updated'));
+				$this->redirect(array('controller' => 'applications',
+											'action' => 'helper',
+										$this->Session->read('Current.Application'),
+										$this->Session->read('Current.Person'),
+										$this->Session->read('Filter.Year')));
+    		} else {
+    			$this->Session->setFlash(__('The role could not be saved. Please, try again.'));
+    		}
+    	} else {
+    		$this->request->data = $this->Person->read(null, $id);
+    	}
+//    	$assigneds = $this->Role->Assigned->find('list');
+//    	$leaderLinks = $this->Role->LeaderLink->find('list');
+//    	$offereds = $this->Role->Offered->find('list');
+//    	$offeredImports = $this->Role->OfferedImport->find('list');
+    	$this->set(compact('assigneds', 'leaderLinks', 'offereds', 'offeredImports'));
+    	 
+    }
 
     public function view($id = null) {
         $this->Person->id = $id;

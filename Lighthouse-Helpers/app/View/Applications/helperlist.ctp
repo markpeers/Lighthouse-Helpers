@@ -1,5 +1,5 @@
 <!-- File: /app/View/Applications/helperlist.ctp -->
-<!-- <?php //debug($lighthouseyears); ?> -->
+<?php //debug($applications); ?>
 
 <div class="index">
 <h2>Helpers - <?php echo $this->Session->read('Filter.Year');
@@ -9,16 +9,35 @@
 		<th><?php echo 'Title';?></th>
 		<th><?php echo $this->Paginator->sort('Person.First_Name', 'First Name');?></th>
 		<th><?php echo $this->Paginator->sort('Person.Last_Name', 'Last Name');?></th>
+		<th><?php echo $this->Paginator->sort('Person.Person_ID', 'Badge Number');?></th>
+		<th><?php echo $this->Paginator->sort('Person.Application.Application_ID', 'Application Ref');?></th>
 		<th class="actions"><?php echo __('Actions');?></th>
     </tr>
 
-    <!-- Here is where we loop through our $people array, printing out person info -->
-
-    <?php foreach ($applications as $application): ?>
+    <?php 
+//    	$count = 0;
+    	foreach ($applications as $application): 
+/*     		if ($count > 0) {
+    			$prev = $applications[$count - 1]['Application']['Application_ID'];
+			} else {
+				$prev = 0;
+			}
+			if ($count < count($applications) - 1) {
+				$next = $applications[$count + 1]['Application']['Application_ID'];
+			} else {
+				$next = 0;
+			}
+			$count++;
+ */    		?>
 		<tr>
 				<td><?php echo $application['Person']['Title']; ?></td>
-				<td><?php echo $application['Person']['First_Name']; ?></td>
+				<td><?php echo $application['Person']['First_Name']; 
+							if (!($application['Person']['First_Name'] == $application['Person']['Nickname'])) {
+								echo ' ('.$application['Person']['Nickname'].')';
+							}?></td>
 				<td><?php echo $application['Person']['Last_Name']; ?></td>
+				<td><?php echo $application['Person']['Person_ID']; ?></td>
+				<td><?php echo $application['Application']['Application_ID']; ?></td>
 				<td class="actions">
 					<?php 
 						//echo $this->Html->link('Details', array('action' => 'view', $application['Application']['Application_ID'])); 
@@ -26,7 +45,21 @@
 													array(	'action' => 'helper', 
 															$application['Application']['Application_ID'],
 															$application['Person']['Person_ID'], 
-															$this->Session->read('Filter.Year'))); 
+															$this->Session->read('Filter.Year')//,
+															//$prev,
+															//$next
+															)
+												); 
+					?>
+					<?php 
+						echo $this->Form->postLink('Delete Application', array('controller' => 'Applications',
+																		'action' => 'delete', 
+																		$application['Application']['Application_ID']), 
+																		null, 
+																		__('Are you sure you want to delete the "%s" application from %s %s?', 
+																		$this->Session->read('Filter.Year'),
+																		$application['Person']['Nickname'],
+																		$application['Person']['Last_Name'])); 
 					?>
 				</td>
 		</tr>

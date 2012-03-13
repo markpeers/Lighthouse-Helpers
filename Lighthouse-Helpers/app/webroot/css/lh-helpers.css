@@ -35,3 +35,10 @@ fieldset legend {
 input, textarea {
 	font-size: 100%;
 }
+
+/** Person edit form **/
+.people form div {
+	margin-bottom: 0;
+}
+
+
