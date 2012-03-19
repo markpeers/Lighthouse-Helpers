@@ -22,8 +22,10 @@
 	<ul>
 		<li><?php echo $this->Html->link(__('Helper Summary'), array('controller' => 'applications','action' => 'index')); ?></li>
 		<li><?php echo $this->Html->link(__('List Helpers'), array('controller' => 'applications','action' => 'helperlist')); ?></li>
+		<li>&nbsp;</li>
 		<li><?php echo $this->Html->link(__('Cancel Send'), array('controller' => 'applications', 
 																	'action' => 'index')); ?></li>
+		<li>&nbsp;</li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>
 </div>

@@ -211,5 +211,8 @@ class EmailsController extends AppController {
 		}
  	}
 	
-
+	public function referencerequest() {
+		$this->Session->setFlash('Sending email reference requests is not yet implimented'); //set flashmessage;
+		$this->redirect($this->referer());
+	}
 }

@@ -2,14 +2,18 @@
 /** CSS for printed versions of pages **/
 
 /* Remove unwanted elements */
+div#header,
+div#footer,
+.noprint,
 .actions,
+.message,
 div.paging, 
 .cake-sql-log {
 	display: none;
 }
 
 /* Ensure the content spans the full width */
-div.header,
+div#header,
 div.form,
 div.index,
 div.view {

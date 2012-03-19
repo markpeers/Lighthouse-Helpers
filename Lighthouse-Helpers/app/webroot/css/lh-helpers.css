@@ -41,4 +41,49 @@ input, textarea {
 	margin-bottom: 0;
 }
 
+/** Images **/
+img.logo {
+	height: 125px;
+	width: 125px;
+	float: right;
+}
 
+/** Reference letters **/
+.letterhead, .letterfooter {
+	text-align:center;
+}
+.letterhead, .letterbody {
+	padding-right:20px;
+}
+.reference {
+	padding-left:20px;
+}
+div.divider {
+	width: 80%;
+	border:1px dashed #ddd;
+	margin-left:10%;
+	margin-right:10%;
+	margin-top:0;
+	margin-bottom:20px;
+	
+}
+div.pagebreak {
+	page-break-after:always;
+}
+div.letterbody {
+	margin-top:100px;
+}
+div.reference table {
+	border-spacing: 0 5px;
+	margin-top: 10px;
+}
+div.reference table td {
+	width:50%;
+	background: #fff;
+	border: 0;
+}
+div.reference table td.rightcol {
+	width:50%;
+/**	height: 20px; **/
+	border: 1px solid #ddd;
+}

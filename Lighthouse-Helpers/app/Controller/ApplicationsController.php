@@ -29,7 +29,10 @@ class ApplicationsController extends AppController {
 			'Person.Title',
 			'Person.First_Name',
 			'Person.Nickname',
-			'Person.Last_Name'
+			'Person.Last_Name',
+			'Person.Telephone_1',
+			'Person.Telephone_2',
+			'Person.email'
 			)
 	);
 	
@@ -312,7 +315,8 @@ class ApplicationsController extends AppController {
 		$lhyears = $sessiondata['lhyears'];
 		$applicationProblem = $sessiondata['applicationProblem'];
 		
-	 
+		$this->log($this->request, 'debug');
+		
 		if (!empty($this->request->data)) {
 			//debug($this->request->data);
 			$lhyear = $this->request->data['Filter']['Year'];
@@ -376,46 +380,11 @@ class ApplicationsController extends AppController {
 			$this->Session->write('Current.Application', $application_id);
 			$this->Session->write('Current.Person', $person_id);
 
-			//find applications before and after current application
-			//this depends on the filter setting, so get list of applications matching the filter
-/* 			switch ($this->Session->read('Filter.Problem')) {
-				case 0: $conditions = array('Application.Year'=> $year); break; //all applications
-				case 1: $conditions = array('Application.Application_ID ' => $this->referenceAttention($year)); break; //applications with no reference
-				case 2: $conditions = array('Application.Application_ID ' => $this->noRole($year)); break; //applications with no role assigned
-				case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($year));	break; //applications with no CRB
-				default:
-			}
- */			//			debug($conditions);
-			//also need helpers name so that the application before and after can be in alphabeticalorder 
-/* 			$this->Application->contain(array('Person' => array('fields' => array('First_Name',
-																								'Last_Name'))));
-			$applications = $this->Application->find('all', array('conditions' => $conditions,
-																				'fields' => array('Application.Application_ID',
-																									'Application.tblPerson_Person_ID',
-																									'Application.Year'),
-																				'recursive' => 1,
-																				'order' => array('Person.Last_Name',
-																								'Person.First_Name')));
- */			//			debug($applications);
-/* 			$next_application = null;
+			//the session contains an array with all application ids that match the current filter
+			//with the next and previous applications. 
+			//Iterate through the array to find the current application and extract previous and next
+			$next_application = null;
 			$previous_application = null;
-			for ($i = 0; $i < count($applications); $i++) {
-				if ($applications[$i]['Application']['Application_ID'] == $application_id) {
-					//debug($i);
-					if ($i < count($applications) - 1) {
-						$next_application['application_id'] = $applications[$i + 1]['Application']['Application_ID'];
- 						$next_application['person_id'] = $applications[$i + 1]['Application']['tblPerson_Person_ID'];
-						$next_application['year'] = $applications[$i + 1]['Application']['Year'];
-					}
-					if ($i > 0) {
-						$previous_application['application_id'] = $applications[$i - 1]['Application']['Application_ID'];
-						$previous_application['person_id'] = $applications[$i - 1]['Application']['tblPerson_Person_ID'];
-						$previous_application['year'] = $applications[$i - 1]['Application']['Year'];
-					}
-					break;
-				}
-			}
- */	
 			foreach ($this->Session->read('FilterdApplications') as $filteredapplication) :
 				if ($filteredapplication['Application']['Application_ID'] == $application_id) {
 					$next_application = $filteredapplication['next_application'];
@@ -626,7 +595,7 @@ class ApplicationsController extends AppController {
 	public function test($id = null) {
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];
-		
+		debug(time());
 			}
 	
 	 

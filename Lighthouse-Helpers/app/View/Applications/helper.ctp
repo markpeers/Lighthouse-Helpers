@@ -545,9 +545,14 @@
 														  		</tr>';
 														  break;
 														case 2:
+															if (!$data['Application']['CRB_date']==null) {
+																$crbdate = date('jS F Y',strtotime($data['Application']['CRB_date']));
+															} else {
+																$crbdate = null;
+															}
 														  echo '<tr>
 														  			<td>'.$data['Application']['CRB_number'].'</td>
-														  			<td>'.date('jS F Y',strtotime($data['Application']['CRB_date'])).'</td>
+														  			<td>'.$crbdate.'</td>
 														  			<td>'.$data['Application']['CRB_note'].'</td>
 														  			<td>'.$data['Application']['Year'].'</td>'.$editbutton.'
 														  		</tr>';
@@ -599,9 +604,14 @@
 														  		</tr>';
 														  break;
 														case 2:
-														  echo '<tr>
+				 											if (!$crb['Application']['CRB_date']==null) {
+																$crbdate = date('jS F Y',strtotime($crb['Application']['CRB_date']));
+															} else {
+																$crbdate = null;
+															}
+															echo '<tr>
 														  			<td>'.$crb['Application']['CRB_number'].'</td>
-														  			<td>'.date('jS F Y',strtotime($crb['Application']['CRB_date'])).'</td>
+														  			<td>'.$crbdate.'</td>
 														  			<td>'.$crb['Application']['CRB_note'].'</td>
 														  			<td>'.$crb['Application']['Year'].'</td>'.$copybutton.'
 														  		</tr>';
@@ -742,6 +752,7 @@
 	<ul>
 		<li><?php echo $this->Html->link(__('Helper Summary'), array('controller' => 'applications','action' => 'index')); ?></li>
 		<li><?php echo $this->Html->link(__('List Helpers'), array('controller' => 'applications','action' => 'helperlist')); ?></li>
+		<li>&nbsp;</li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>
 </div>

@@ -20,7 +20,7 @@ $cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 		
 		echo $this->Html->script('jquery-1.7.min'); // Include jQuery library
 		echo $this->Html->script('jquery-ui-1.8.16.custom.min'); // Include jQuery-UI library
-//		echo $this->Html->script('ajaxscript'); // script for ajax call
+		echo $this->Html->script('printme'); // script for printing page
 		
 		echo $scripts_for_layout;
 	?>
