@@ -1,6 +1,6 @@
 <?php
 class AssignedRolesController extends AppController {
-	//public $uses = array('AssignedRolesController', 'Person');
+	//public $uses = array('AssignedRole', 'Person');
 	//public $name = 'AssignedRoles';
 
 /**
@@ -10,8 +10,10 @@ class AssignedRolesController extends AppController {
  */
 	public function index() {
 		//debug('Assigned Roles');
-		$this->AssignedRole->recursive = 0;
-		$this->set('assignedrole', $this->paginate());
+		$this->AssignedRole->contain('Role', 'Application.Person');
+		$data = ($this->AssignedRole->find('all', array('conditions' => array('AssignedRole.tblRole_Role_ID' => 64,
+																				'Application.Year' => 2011))));
+		$this->set('assignedrole', $data);
 	}
 
 	/**

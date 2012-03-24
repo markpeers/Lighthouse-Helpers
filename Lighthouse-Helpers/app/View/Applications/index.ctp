@@ -1,5 +1,5 @@
 <!-- File: /app/View/Applications/index.ctp -->
-<?php //debug($summarys['NoRole']); ?>
+<?php //debug($summarys['AgeGroupHeader']); ?>
 <?php //echo $this->element('menu1'); ?>
 <div class="index">
 	<h2>Helper Summary - <?php echo $this->Session->read('Filter.Year')?></h2>
@@ -19,16 +19,38 @@
 	</table>
 	<br />
 	<table>
-		<?php 
-			echo $this->Html->tableHeaders($summarys['AgeGroupHeader']); 
-			echo $this->Html->tableCells($summarys['AgeGroupRoles']);
-		?>
+		<tr>
+		<?php foreach ($summarys['AgeGroupHeader'] as $header) : ?>
+			<th><?php echo $this->Html->link($header, array('controller' => 'teams', 'action' => 'view', $header));?></th>	 
+		<?php endforeach;?>
+		</tr>
+		<?php foreach ($summarys['AgeGroupRoles'] as $rows) : ?>
+		<tr>
+			<td><?php echo $this->Html->link($rows[0], array('controller' => 'teams', 'action' => 'view', $rows[0]), array('class'=>'nodecoration'));?></td>
+			<?php for ($i=1; $i < count($rows); $i++) { ?>
+				<td><?php echo $rows[$i];?></td>
+			<?php } ?>
+		</tr>
+		<?php endforeach;?>
 	</table>
 	<br />
 	<table>
+		<tr>
+		<?php foreach ($summarys['OtherRolesHeader'] as $header) : ?>
+			<th><?php echo $header;?></th>	 
+		<?php endforeach;?>
+		</tr>
+		<?php foreach ($summarys['OtherRoles'] as $rows) : ?>
+		<tr>
+			<td><?php echo $this->Html->link($rows[0], array('controller' => 'teams', 'action' => 'view', $rows[0]), array('class'=>'nodecoration'));?></td>
+			<?php for ($i=1; $i < count($rows); $i++) { ?>
+				<td><?php echo $rows[$i];?></td>
+			<?php } ?>
+		</tr>
+		<?php endforeach;?>
 		<?php 
-			echo $this->Html->tableHeaders($summarys['OtherRolesHeader']); 
-			echo $this->Html->tableCells($summarys['OtherRoles']);
+			//echo $this->Html->tableHeaders($summarys['OtherRolesHeader']); 
+			//echo $this->Html->tableCells($summarys['OtherRoles']);
 		?>
 	</table>
 </div>

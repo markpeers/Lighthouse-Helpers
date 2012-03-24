@@ -36,6 +36,7 @@ class ApplicationsController extends AppController {
 			)
 	);
 	
+	
 	private function noRole($lhyear) {
 		//get helpers with no role assigned
 		$sql = 'SELECT `Application`.`Application_ID` ';
@@ -135,11 +136,11 @@ class ApplicationsController extends AppController {
 		//get roles and create counts		
 		$rolearray = array();
 		// arrays are toddler, 4s, 5s, 6s, 7s, 8s, 9s, 10+, 12
-		$agegroupheader = array('Role', 'Toddlers', '4s', '5s', '6s', '7s', '8s', '9s', '10+', '12s');
-		$lhk = array('Lighthouse Keeper',0,0,0,0,0,0,0,0,0);
-		$ll = array('Lamp Lighter','-','-',0,0,0,0,0,'-','-');
-		$agl = array('Agegroup Leader',0,0,0,0,0,0,0,0,0);
-		$teacher = array('Teacher',0,0,0,0,0,0,0,0,0);
+		$agegroupheader = array('Role', 'Toddler', '4s', '5s', '6s', '7s', '8s', '9s', '10+', '12s');
+		$lhk = array('Lighthouse Keepers',0,0,0,0,0,0,0,0,0);
+		$ll = array('Lamp Lighters','-','-',0,0,0,0,0,'-','-');
+		$agl = array('Agegroup Leaders',0,0,0,0,0,0,0,0,0);
+		$teacher = array('Teachers',0,0,0,0,0,0,0,0,0);
 		$special = array('Special Needs',0,0,0,0,0,0,0,0,0);
 		$otherrolesheader = array('Role', 'Leader', 'Helpers');
 		$craft = array('Craft - 5\'s to 9\'s',0,0);
@@ -165,7 +166,7 @@ class ApplicationsController extends AppController {
 		$photo = array('Photographer','-',0);
 		$quiettent = array('Quiet Tent',0,0);
 		$registrations = array('Registrations',0,0);
-		$sales = array('Sales',0,'-');
+		$sales = array('Sales','-',0);
 		$saturday = array('Saturday Evening Event',0,0);
 		$security = array('Security',0,0);
 		$siteup = array('Setting Up Site','-',0);
@@ -223,12 +224,12 @@ class ApplicationsController extends AppController {
 			case 'Special Needs - 9s': $special[7] = $role[0]['Qty']; break;
 			case 'Special Needs - 10+s': $special[8] = $role[0]['Qty']; break;
 			case 'Special Needs - 12s': $special[9] = $role[0]['Qty']; break;
-			case 'Craft - 5s to 9s - Leader': $craft[1] = $role[0]['Qty']; break;
-			case 'Craft - 5s to 9s': $craft[2] = $role[0]['Qty']; break;
-			case 'Craft - 4s - Leader': $craft4[1] = $role[0]['Qty']; break;
-			case 'Craft - 4s': $craft4[2] = $role[0]['Qty']; break;
-			case 'Craft - 10+s - Leader': $craft10[1] = $role[0]['Qty']; break;
-			case 'Craft - 10+s': $craft10[2] = $role[0]['Qty']; break;
+			case 'Craft 5-9s - Leader': $craft[1] = $role[0]['Qty']; break;
+			case 'Craft - 5\'s to 9\'s': $craft[2] = $role[0]['Qty']; break;
+			case 'Craft 4s - Leader': $craft4[1] = $role[0]['Qty']; break;
+			case 'Craft - 4\'s': $craft4[2] = $role[0]['Qty']; break;
+			case 'Craft 10+s - Leader': $craft10[1] = $role[0]['Qty']; break;
+			case 'Craft - 10+\'s': $craft10[2] = $role[0]['Qty']; break;
 			case 'Craft Preparation': $craftprep[2] = $role[0]['Qty']; break;
 			case 'Administration - Leader': $admin[1] = $role[0]['Qty']; break;
 			case 'Administration': $admin[2] = $role[0]['Qty']; break;
@@ -315,7 +316,7 @@ class ApplicationsController extends AppController {
 		$lhyears = $sessiondata['lhyears'];
 		$applicationProblem = $sessiondata['applicationProblem'];
 		
-		$this->log($this->request, 'debug');
+		//$this->log($this->request, 'debug');
 		
 		if (!empty($this->request->data)) {
 			//debug($this->request->data);
@@ -334,31 +335,34 @@ class ApplicationsController extends AppController {
 		}
 		
 		//build an array with next and previous applications for each application
-		$this->Application->contain(array('Person' => array('fields' => array('First_Name','Last_Name'))));
+		$this->Application->contain(array('Person' => array('fields' => array('First_Name','Last_Name')),
+											'AssignedRole' => array('fields' => array('Role_Assigned_ID','tblRole_Role_ID'))));
 		$filtered_applications = $this->Application->find('all', array('conditions' => $conditions,
-																						'fields' => array('Application.Application_ID',
-																											'Application.tblPerson_Person_ID',
-																											'Application.Year'),
-																						'recursive' => 1,
-																						'order' => array('Person.Last_Name',
-																										'Person.First_Name')));
-			//for each filtered application returned, find preveious and next and add to the array
-			for ($i = 0; $i < count($filtered_applications); $i++) {
-				if ($i < count($filtered_applications) - 1) {
-					$filtered_applications[$i]['next_application']['application_id'] = $filtered_applications[$i + 1]['Application']['Application_ID'];
-					$filtered_applications[$i]['next_application']['person_id'] = $filtered_applications[$i + 1]['Application']['tblPerson_Person_ID'];
-					$filtered_applications[$i]['next_application']['year'] = $filtered_applications[$i + 1]['Application']['Year'];
-				} else {
-					$filtered_applications[$i]['next_application'] = null;
-				}
-				if ($i > 0) {
-					$filtered_applications[$i]['previous_application']['application_id'] = $filtered_applications[$i - 1]['Application']['Application_ID'];
-					$filtered_applications[$i]['previous_application']['person_id'] = $filtered_applications[$i - 1]['Application']['tblPerson_Person_ID'];
-					$filtered_applications[$i]['previous_application']['year'] = $filtered_applications[$i - 1]['Application']['Year'];
-				} else {
-					$filtered_applications[$i]['previous_application'] = null;
-				}
+																		'fields' => array('Application.Application_ID',
+																							'Application.tblPerson_Person_ID',
+																							'Application.Year'),
+																		//'recursive' => 2,
+																		'order' => array('Person.Last_Name',
+																							'Person.First_Name')));
+		
+
+		//for each filtered application returned, find preveious and next and add to the array
+		for ($i = 0; $i < count($filtered_applications); $i++) {
+			if ($i < count($filtered_applications) - 1) {
+				$filtered_applications[$i]['next_application']['application_id'] = $filtered_applications[$i + 1]['Application']['Application_ID'];
+				$filtered_applications[$i]['next_application']['person_id'] = $filtered_applications[$i + 1]['Application']['tblPerson_Person_ID'];
+				$filtered_applications[$i]['next_application']['year'] = $filtered_applications[$i + 1]['Application']['Year'];
+			} else {
+				$filtered_applications[$i]['next_application'] = null;
 			}
+			if ($i > 0) {
+				$filtered_applications[$i]['previous_application']['application_id'] = $filtered_applications[$i - 1]['Application']['Application_ID'];
+				$filtered_applications[$i]['previous_application']['person_id'] = $filtered_applications[$i - 1]['Application']['tblPerson_Person_ID'];
+				$filtered_applications[$i]['previous_application']['year'] = $filtered_applications[$i - 1]['Application']['Year'];
+			} else {
+				$filtered_applications[$i]['previous_application'] = null;
+			}
+		}
 		//debug($filtered_applications);
 		$this->Session->write('FilterdApplications', $filtered_applications);
 		
@@ -590,12 +594,68 @@ class ApplicationsController extends AppController {
 		$this->Session->setFlash(__('Application was not deleted'));
 		$this->redirect($this->referer());
 	}
+
+	/**
+	* printhelperlist method
+	*
+	* displays a list of all helpers in the filter ready to print 
+	*
+	* @param none
+	* @return void
+	*/
+	public function printhelperlist() {
+		
+		$sessiondata = $this->getsessiondata();
+		$lhyear = $sessiondata['lhyear'];
+		$lhyears = $sessiondata['lhyears'];
+		$applicationProblem = $sessiondata['applicationProblem'];
+				
+		//$this->log($this->request, 'debug');
+		
+		if (!empty($this->request->data)) {
+			//debug($this->request->data);
+			$lhyear = $this->request->data['Filter']['Year'];
+			$this->Session->write('Filter.Year', $lhyear);
+			$applicationProblem = $this->request->data['Filter']['ApplicationProblem'];
+			$this->Session->write('Filter.Problem', $applicationProblem);
+			}
+		
+		switch ($applicationProblem) {
+			case 0: $conditions = array('Application.Year'=> $this->Session->read('Filter.Year')); break; //all applications
+			case 1: $conditions = array('Application.Application_ID ' => $this->referenceAttention($lhyear)); break; //applications with no reference
+			case 2: $conditions = array('Application.Application_ID ' => $this->noRole($lhyear)); break; //applications with no role assigned
+			case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($lhyear));	break; //applications with no CRB
+			default:
+			}
+		
+		$applications = $this->Application->find('all', array('fields' => array('Application.Application_ID',
+																				'Application.Year',
+																				'Person.Person_ID',
+																				'Person.Title',
+																				'Person.First_Name',
+																				'Person.Nickname',
+																				'Person.Last_Name',
+																				'Person.Telephone_1',
+																				'Person.Telephone_2',
+																				'Person.email'),
+																'order' => array(
+																            'Person.Last_Name' => 'asc',
+																			'Person.First_Name' => 'asc'),
+																'conditions' => $conditions
+																)
+													);
+		
+		$this->set('LHYears', $lhyears);
+		$this->set('problemFilterOptions', $this->problemFilterOptions);
+		$this->set('applications', $applications);
+		
+	}
 	
 	
 	public function test($id = null) {
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];
-		debug(time());
+		//debug(time());
 			}
 	
 	 

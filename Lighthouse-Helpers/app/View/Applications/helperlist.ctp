@@ -1,9 +1,12 @@
 <!-- File: /app/View/Applications/helperlist.ctp -->
-<?php //debug($applications); ?>
+<?php //debug($LHYears); 
+	  //debug($problemFilterOptions); 
+	  //debug($group); 
+	  //debug($applications); ?>
 
 <div class="index">
-<h2>Helpers - <?php echo $this->Session->read('Filter.Year');
-					echo ' ('.$problemFilterOptions[$this->Session->read('Filter.Problem')].')'?></h2>
+<h2>Helpers - <?php echo __('%s (%s)', $this->Session->read('Filter.Year'),
+									$problemFilterOptions[$this->Session->read('Filter.Problem')]);?></h2>
 <table>
     <tr>
 		<th><?php echo 'Title';?></th>
@@ -113,6 +116,8 @@
 	<h3><?php echo __('Actions'); ?></h3>
 	<ul>
 		<li><?php echo $this->Html->link(__('Helper Summary'), array('action' => 'index')); ?></li>
+		<li>&nbsp;</li>
+		<li><?php echo $this->Html->link(__('Print Helper List'), array('action' => 'printhelperlist')); ?></li>
 		<li>&nbsp;</li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>
 	</ul>

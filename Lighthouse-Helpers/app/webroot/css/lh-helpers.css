@@ -10,6 +10,9 @@ h2 {
 h3 {
 	font-size: 125%;
 }
+.nodecoration {
+	text-decoration: none;
+}
 
 /** Layout **/
 #menu {
