@@ -50,7 +50,7 @@ class ApplicationsController extends AppController {
 	/**
 	 * 
 	 * Lighthouse start dates, this array is currently in the main LH site, need to get this movedto db
-	 * Contains an array of datetime, which corrpesond with 00:00GMT on the Monday of each Lighthouse
+	 * Contains an array of date/time, which corrpesond with 00:00GMT on the Monday of each Lighthouse
 	 * Array MUST be in ascending date order
 	 * @var array
 	 */
@@ -179,6 +179,24 @@ class ApplicationsController extends AppController {
 		return $formatedpostcode;
 	}
 
+	/**
+	 * 
+	 * Calculates age in years from dob to refdate
+	 * (this is a work around because DateTime::diff isn't in PHP 5.2)
+	 * @param DateTime $dob
+	 * @param DateTime $refdate
+	 * @return number
+	 */
+	private function getlhage ($dob, $refdate) {
+		$year_diff  = $refdate->format('Y') - $dob->format('Y');
+		$month_diff = $refdate->format('m') - $dob->format('m');
+		$day_diff   = $refdate->format('d') - $dob->format('d');
+		if ($month_diff < 0) $year_diff--;
+		elseif (($month_diff==0) && ($day_diff < 0)) $year_diff--;
+		return $year_diff;
+	}
+	
+	
 	function index() {
 
 		//$this->Session->setflash('Flash message');
@@ -709,8 +727,10 @@ class ApplicationsController extends AppController {
 			$lhmonday = new DateTime($lh_start_date);
 			if ($lhmonday->format('Y') == $lhyear) {
 				//Calculate the date of LH Friday
-				$lhfriday = new DateTime($lh_start_date);
-				$lhfriday->add(new DateInterval('P4D'));
+				//$lhfriday = new DateTime($lh_start_date);
+				//$lhfriday->add(new DateInterval('P4D'));
+				//bluehost only has PHP 5.2 that doesn't support datetime->add so use old date funtion to add 4 days
+				$lhfriday = new DateTime(date('y-m-d H:i:s',strtotime($lh_start_date) + (60*60*24*4)));
 				break;
 			}
 		endforeach;
@@ -744,8 +764,8 @@ class ApplicationsController extends AppController {
 									'Application.AssignedRole.Role' => array('fields'=>array('Role.RoleName')),
 									'Church'));
 		$helpers = $this->Person->find('all', array(
-													'order'=>array('Person.Post_code'),
-													'limit' => 20 //comment out limit on live system
+													'order'=>array('Person.Post_code')//,
+		//											'limit' => 20 //comment out limit on live system
 		//											,'conditions' => array('Person.Person_ID > ' => 10261)
 													));
 		//		debug('Total helpers: '.count($helpers));
@@ -765,8 +785,9 @@ class ApplicationsController extends AppController {
 					$dob = $dummydob;
 				}
 				$refdate = new DateTime($lhyear.'-'.$this->ageAtDate);
-				$interval = $refdate->diff($dob);
-				if ($interval->y < $this->crbRequiredAge) {
+				//$interval = $refdate->diff($dob);
+				//if ($interval->y < $this->crbRequiredAge) {
+				if ($this->getlhage($dob, $refdate) < $this->crbRequiredAge) {
 					$over16 = false;
 				} else {
 					$over16 = true;
