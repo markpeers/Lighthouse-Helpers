@@ -14,6 +14,7 @@ div.paging,
 
 /* Ensure the content spans the full width */
 div#header,
+div#applicationform,
 div.form,
 div.index,
 div.view {
@@ -26,6 +27,6 @@ div.view {
 
 /* Set font size */
 body {
-	font-size: 10px;
+	font-size: 1em;
 }
 

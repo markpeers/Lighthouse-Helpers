@@ -69,7 +69,8 @@ class PeopleController extends AppController {
             		'OR' => array(
 		            array('Person.Last_Name LIKE'=>'%'.$_GET['term'].'%'),
 		            array('Person.Nickname LIKE'=>'%'.$_GET['term'].'%'),
-            		array('Person.First_Name LIKE'=>'%'.$_GET['term'].'%')
+            		array('Person.First_Name LIKE'=>'%'.$_GET['term'].'%'),
+            		array('Person.Person_ID LIKE'=>'%'.$_GET['term'].'%')
 		            )),
             		'order'=>array('Person.Last_Name', 'Person.Nickname')
             ));

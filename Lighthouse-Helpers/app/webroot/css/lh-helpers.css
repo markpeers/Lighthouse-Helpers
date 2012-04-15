@@ -90,3 +90,74 @@ div.reference table td.rightcol {
 /**	height: 20px; **/
 	border: 1px solid #ddd;
 }
+
+
+/** Application forms **/
+div#applicationform {
+	#width: 100%;
+	margin: 0;
+	font-size: 0.75em;
+	font-family: sans-serif;
+}
+div#applicationform h3 {
+	margin: 0;
+	font-size: 1.17em;
+	font-weight: bold;
+}
+div#returnaddress {
+	margin: 5px;
+}
+div#applicationform table, 
+div#applicationform tr,
+div#applicationform td {
+	border: 0;
+	border-spacing: 5px;
+	vertical-align: top;
+	padding: 0;
+}
+div#applicationform table {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+/* remove the alternating row colour */
+div#applicationform table tr:nth-child(even) {
+	background: #ffffff;
+}
+div#applicationform table.colapseborder {
+	border-collapse:collapse;
+}
+div#applicationform table#officeuse {
+	width: 200px;
+	margin-right: 0;
+}
+div#applicationform td.half {
+	width: 50%;
+}
+div#applicationform td.quarter {
+	width: 25%;
+}
+div#applicationform td.twothirds {
+	width: 67%;
+}
+div#applicationform td.onethird {
+	width: 33%;
+}
+div#applicationform .border {
+	border: 1px solid;
+} 
+div#applicationform .noborder {
+	border: 0;
+} 
+div#applicationform .rubric {
+	font-size: 0.7em;
+}
+div#applicationform .centre {
+	text-align: center;
+}
+div#applicationform .indent {
+	margin-left: 20px;
+}
+div#applicationform .bold {
+	font-weight:bold;
+}

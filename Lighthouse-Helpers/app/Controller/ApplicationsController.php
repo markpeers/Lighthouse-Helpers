@@ -11,11 +11,56 @@ class ApplicationsController extends AppController {
 						);
 	public $name = 'Applications';
 	
-	private $crbValidYears = 5; //no of years CRB is valid
-	private $crbRequiredAge = 17; //age at which a CRB is required
-	private $ageAtDate = '08-31'; //when calculating age use this date (August 31)	
-	private $problemFilterOptions = array('All', 'No Reference', 'No Role', 'No CRB'); //options for filter in index page
-
+	/**
+	 * 
+	 * no of years CRB is valid.
+	 * @var int
+	 */
+	private $crbValidYears = 5; 
+	
+	/**
+	 * 
+	 * age at which a CRB is required
+	 * @var int
+	 */
+	private $crbRequiredAge = 17; 
+	
+	/**
+	 * 
+	 * when calculating age use this date (August 31)
+	 * @var string
+	 */
+	private $ageAtDate = '08-31'; 
+	
+	/**
+	 * 
+	 * reg team used various dummy email addresses to get paper applications through online system
+	 * this is an array of those dummy emails
+	 * @var array
+	 */
+	private $dummyemails = array('nomail@mail.com', 'no@email.com','noemail@mail.co.uk'); 
+	
+	/**
+	 * 
+	 * options for filter in index page
+	 * @var array
+	 */
+	private $problemFilterOptions = array('All', 'No Reference', 'No Role', 'No CRB'); 
+	
+	/**
+	 * 
+	 * Lighthouse start dates, this array is currently in the main LH site, need to get this movedto db
+	 * Contains an array of datetime, which corrpesond with 00:00GMT on the Monday of each Lighthouse
+	 * Array MUST be in ascending date order
+	 * @var array
+	 */
+	private $lh_start_dates = array(
+		"2010-07-26 00:00:00",
+		"2011-07-25 00:00:00",
+		"2012-07-23 00:00:00",
+		"2013-07-29 00:00:00"
+	);
+	
 	public $paginate = array(
         'limit' => 10,
         'order' => array(
@@ -36,7 +81,12 @@ class ApplicationsController extends AppController {
 			)
 	);
 	
-	
+	/**
+	 * 
+	 * get helpers with no role assigned
+	 * @param string $lhyear
+	 * @return multitype:
+	 */
 	private function noRole($lhyear) {
 		//get helpers with no role assigned
 		$sql = 'SELECT `Application`.`Application_ID` ';
@@ -54,6 +104,12 @@ class ApplicationsController extends AppController {
 		return $noRole;
 	}
 	
+	/**
+	 * 
+	 * get helpers with CRB needing attention
+	 * @param string $lhyear
+	 * @return multitype:
+	 */
 	private function crbAttention($lhyear) {
 		//get helpers with CRB needing attention
 		$sql = 'SELECT `Application`.`Application_ID` ';   
@@ -72,6 +128,12 @@ class ApplicationsController extends AppController {
 		return $crbAttention;
 	}
 	
+	/**
+	 * 
+	 * get applications without references.
+	 * @param string $lhyear
+	 * @return multitype:
+	 */
 	private function referenceAttention($lhyear) {
 		//get applications without references
 		//get all applications for current year and only add reference record if the reference is ok
@@ -101,6 +163,20 @@ class ApplicationsController extends AppController {
 			}
 		}
 		return $referenceAttention;
+	}
+
+	/**
+	* 
+	* Take a postcode with all spaces removed
+	* and puts a space before the final 3 charaters
+	*
+	* @param $postcode - a string containing a postcode without spaces
+	* @return string
+	*/
+	private function formatpostcode($postcode) {
+		$i= strlen($postcode);
+		$formatedpostcode = sprintf('%s %s',substr($postcode, 0, $i-3), substr($postcode, $i-3, 3));
+		return $formatedpostcode;
 	}
 
 	function index() {
@@ -374,7 +450,6 @@ class ApplicationsController extends AppController {
 	}
 
 	public function helper($application_id = null, $person_id = null, $year = null, $offset = null) {
-//		if ($offset==null) {
 			if ($year==null) {
 				$sessiondata = $this->getsessiondata();
 				$year = $sessiondata['lhyear'];
@@ -441,42 +516,7 @@ class ApplicationsController extends AppController {
 			
 			$this->set('crbs', $crbs);
 			$this->set('data', $application);
-/* 		} else { //$offset is set so find next or previous application and call helper again with new application
-			//find applications that mtch the curent filter and get application ID and person id
-			switch ($this->Session->read('Filter.Problem')) {
-				case 0: $conditions = array('Application.Year'=> $year); break; //all applications
-				case 1: $conditions = array('Application.Application_ID ' => $this->referenceAttention($year)); break; //applications with no reference
-				case 2: $conditions = array('Application.Application_ID ' => $this->noRole($year)); break; //applications with no role assigned
-				case 3: $conditions = array('Application.Application_ID ' => $this->crbAttention($year));	break; //applications with no CRB
-				default:
-			}
-//			debug($conditions);
-			$this->Application->contain(array('Person' => array('fields' => array('First_Name',
-																					'Last_Name'))));
-			$applications = $this->Application->find('all', array('conditions' => $conditions,
-																	'fields' => array('Application.Application_ID',
-																						'Application.tblPerson_Person_ID',
-																						'Application.Year'),
-																	'recursive' => 1,
-																	'order' => array('Person.Last_Name',
-																					'Person.First_Name')));
-//			debug($applications);
-			for ($i = 0; $i < count($applications); $i++) {
-				if ($applications[$i]['Application']['Application_ID'] == $application_id) {
-					$next_application['application_id'] = $applications[$i + $offset]['Application']['Application_ID'];
-					$next_application['person_id'] = $applications[$i + $offset]['Application']['tblPerson_Person_ID'];
-					$next_application['year'] = $applications[$i + $offset]['Application']['Year'];
-					break;
-				}
-			}
-//			debug($next_application);
-			$this->redirect(array('controller' => 'applications',
-									'action' => 'helper',
-									$next_application['application_id'],
-									$next_application['person_id'],
-									$next_application['year']));
-		}
- */	}
+	}
 	
     
 	public function editnotes($application_id = null) {
@@ -596,7 +636,6 @@ class ApplicationsController extends AppController {
 	}
 
 	/**
-	* printhelperlist method
 	*
 	* displays a list of all helpers in the filter ready to print 
 	*
@@ -649,6 +688,156 @@ class ApplicationsController extends AppController {
 		$this->set('problemFilterOptions', $this->problemFilterOptions);
 		$this->set('applications', $applications);
 		
+	}
+	
+	/**
+	*
+	* generates prepopulated helper application forms for any of 
+	* last years helpers that haven't register for this year
+	*
+	* @param none
+	* @return void
+	*/
+	public function printhelperapplication() {
+		$sessiondata = $this->getsessiondata();
+		$lhyear = $sessiondata['lhyear'];
+		//format for dates on printed application form
+		$dateformat = 'jS F Y'; //format for all dates on the form
+		// get the date of the Monday of LH
+		// lh_start_dates contains monday of lh for each year so find the one for this year.
+		foreach ($this->lh_start_dates as $lh_start_date) :
+			$lhmonday = new DateTime($lh_start_date);
+			if ($lhmonday->format('Y') == $lhyear) {
+				//Calculate the date of LH Friday
+				$lhfriday = new DateTime($lh_start_date);
+				$lhfriday->add(new DateInterval('P4D'));
+				break;
+			}
+		endforeach;
+		$applicationstoprint = array(); //initialise array to hold data for reminder emails
+		$results = array('sent'=>0, 'failed'=>0, 'invalidemail'=>0); //initialise array to count send stats
+		//setup contain and filter for
+		$this->Person->contain(array('Application' => array('conditions'=>array('Application.Year >= '=> $lhyear - 1),
+															'fields'=>array('Application.Application_ID',
+												                            'Application.tblPerson_Person_ID',
+												                            'Application.Year',
+												                            'Application.LH_Address_1', 
+												                            'Application.LH_Address_2', 
+												                            'Application.LH_Town', 
+												                            'Application.LH_County', 
+												                            'Application.LH_Post_Code',
+												                            'Application.LH_Telephone', 
+												                            'Application.CRB_date',
+												                            'Application.CRB_number',
+												                            'Application.Healthproblems_details', 
+												                            'Application.Emergency_contact',
+												                            'Application.Emergency_phone1',
+												                            'Application.Emergency_phone2',
+												                            'Application.Emergency_relationship'
+																			),
+															'order'=>array('Application.Year DESC')
+															),
+									'RefereeTemp' => array('conditions'=>array('RefereeTemp.Year >= '=> $lhyear - 1),
+															'order'=>array('RefereeTemp.Year DESC')
+															),
+									'Application.AssignedRole' => array('fields'=>array('AssignedRole.tblRole_Role_ID')),
+									'Application.AssignedRole.Role' => array('fields'=>array('Role.RoleName')),
+									'Church'));
+		$helpers = $this->Person->find('all', array(
+													'order'=>array('Person.Post_code'),
+													'limit' => 20 //comment out limit on live system
+		//											,'conditions' => array('Person.Person_ID > ' => 10261)
+													));
+		//		debug('Total helpers: '.count($helpers));
+		foreach ($helpers as $helper) : // iterate through all helpers to find ones with any applications in the last two years
+			if (count($helper['Application']) > 0 ) {
+				$helperswithapplications[] = $helper; //if the helper has at least one application add it to $helperswithapplications array
+			}
+		endforeach;
+		//iterate throug the helpes with an application in the last to years and remove helpers that have applied this year 
+		foreach ($helperswithapplications as $helperwithapplications) :
+			if ($helperwithapplications['Application'][0]['Year'] != $lhyear) {
+				//calculate age and add to person array
+				$dummydob = new DateTime('1900-01-01'); //dummy dob in case one isn't present'
+				if (isset($helperwithapplications['Person']['Date_of_birth'])) {
+					$dob = new DateTime($helperwithapplications['Person']['Date_of_birth']);
+				} else {
+					$dob = $dummydob;
+				}
+				$refdate = new DateTime($lhyear.'-'.$this->ageAtDate);
+				$interval = $refdate->diff($dob);
+				if ($interval->y < $this->crbRequiredAge) {
+					$over16 = false;
+				} else {
+					$over16 = true;
+				}
+				$helperwithapplications['Person']['Over16'] = $over16;
+				//check for nickname,if not set then use first name
+				if (!isset($helperwithapplications['Person']['Nickname'])) {
+					$helperwithapplications['Person']['Nickname'] = $helperwithapplications['Person']['First_Name'];
+				}
+				//check for a valid email - previous years reg team used various dummy email addresses
+				if (in_array($helperwithapplications['Person']['email'],$this->dummyemails) || $helperwithapplications['Person']['email']=='') {
+					$helperwithapplications['Person']['email'] = 'None';
+				}
+				//format dates
+				if ($dob == $dummydob) {
+					$helperwithapplications['Person']['Date_of_birth'] = 'Please enter';
+				} else {
+					$helperwithapplications['Person']['Date_of_birth'] = $dob->format($dateformat);
+				}
+				if (isset($helperwithapplications['Application'][0]['CRB_date'])) {
+					$crbdate = new DateTime($helperwithapplications['Application'][0]['CRB_date']);
+					$helperwithapplications['Application'][0]['CRB_date'] = $crbdate->format($dateformat);
+				} else {
+					$helperwithapplications['Application'][0]['CRB_date'] = 'None';
+				}
+				//format postcodes
+				if (isset($helperwithapplications['Person']['Post_Code'])) {
+					$helperwithapplications['Person']['Post_Code'] = $this->formatpostcode($helperwithapplications['Person']['Post_Code']);
+				}
+				if (isset($helperwithapplications['Application'][0]['LH_Post_Code'])) {
+					$helperwithapplications['Application'][0]['LH_Post_Code'] = $this->formatpostcode($helperwithapplications['Application'][0]['LH_Post_Code']);
+				}
+				if (isset($helperwithapplications['RefereeTemp'][0]['Post_Code'])) {
+					$helperwithapplications['RefereeTemp'][0]['Post_Code'] = $this->formatpostcode($helperwithapplications['RefereeTemp'][0]['Post_Code']);
+				}
+				if (isset($helperwithapplications['RefereeTemp'][1]['Post_Code'])) {
+					$helperwithapplications['RefereeTemp'][1]['Post_Code'] = $this->formatpostcode($helperwithapplications['RefereeTemp'][1]['Post_Code']);
+				}
+				//check for blank entries
+				if (!isset($helperwithapplications['Person']['Telephone_1'])) {
+					$helperwithapplications['Person']['Telephone_1'] = '&nbsp';
+				}
+				if (!isset($helperwithapplications['Person']['Telephone_2'])) {
+					$helperwithapplications['Person']['Telephone_2'] = '&nbsp';
+				}
+				if (!isset($helperwithapplications['Church']['Name'])) {
+					$helperwithapplications['Church']['Name'] = '&nbsp';
+				}
+				if (!isset($helperwithapplications['Application'][0]['Healthproblems_details'])) {
+					$helperwithapplications['Application'][0]['Healthproblems_details'] = '&nbsp';
+				}
+				if (!isset($helperwithapplications['Application'][0]['CRB_number']) || strlen($helperwithapplications['Application'][0]['CRB_number'] == 0)) {
+					$helperwithapplications['Application'][0]['CRB_number'] = 'None';
+				}
+				//build list of roles
+				$rolelist = '';
+				foreach ($helperwithapplications['Application'][0]['AssignedRole'] as $role) :
+					$rolelist = $rolelist.$role['Role']['RoleName'].'  /  ';
+				endforeach;
+				$helperwithapplications['Application'][0]['AssignedRoleList'] = substr($rolelist, 0, strlen($rolelist)-5);
+				$applicationstoprint[] = $helperwithapplications;
+			}
+		endforeach;
+		//debug('Total helpers with applications this year or last year: '.count($helperswithapplications));
+		//debug($helperswithapplications);
+		//debug('Total helpers with applications last year only: '.count($applicationstoprint));
+		//debug($applicationstoprint);
+		$this->set('lhmonday', $lhmonday);
+		$this->set('lhfriday', $lhfriday);
+		$this->set('lhyear', $lhyear);
+		$this->set('applicationstoprint',$applicationstoprint);
 	}
 	
 	

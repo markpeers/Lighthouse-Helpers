@@ -61,4 +61,3 @@
 	</ul>
 </div>
 
-<?php echo $this->Html->script('ajaxautocomplete'); // script for ajax call?>
