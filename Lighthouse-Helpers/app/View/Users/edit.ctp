@@ -6,10 +6,11 @@
 		echo $this->Form->input('id');
 		echo $this->Form->input('username');
 		echo $this->Form->input('password');
-		echo $this->Form->input('role');
+		echo $this->Form->input('role', array(
+            'options' => Configure::read('user_roles')));
 	?>
 	</fieldset>
-<?php echo $this->Form->end(__('Submit'));?>
+	<?php echo $this->Form->end(__('Submit'));?>
 </div>
 <div class="actions">
 	<h3><?php echo __('Actions'); ?></h3>

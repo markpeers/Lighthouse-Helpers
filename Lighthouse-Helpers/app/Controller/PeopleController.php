@@ -2,6 +2,24 @@
 class PeopleController extends AppController {
     public $name = 'People';
 
+    public function isAuthorized($user) {
+    	// All registered users access these actions
+    	//if (in_array($this->action, array('index'))) {
+    	//	return true;
+    	//}
+    
+    	// Permitted actions depend on user role
+    	if (isset($user['role']) && in_array($user['role'], array('reg_user'))) {
+    		//if (in_array($this->action, array('printhelperlist'))) {
+    		return true;
+    		//}
+    	}
+    	// If no matches here used authorization from appcontroller
+    	// i.e. admin gets everything
+    	return parent::isAuthorized($user);
+    }
+    
+    
     public $paginate = array(
         'limit' => 10,
         'order' => array(

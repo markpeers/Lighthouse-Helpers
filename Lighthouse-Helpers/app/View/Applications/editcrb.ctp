@@ -22,7 +22,7 @@
 													'timeFormat' => null, 
 													'separator' => ' / ',
 													'empty' => true,
-													'minYear' => $this->Session->read('Filter.Year') - $crbValidYears, 
+													'minYear' => $this->Session->read('Filter.Year') - Configure::read('crb.validYears'), 
 													'maxYear' => $this->Session->read('Filter.Year'),
 													'label' => 'CRB Date'
 													));

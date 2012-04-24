@@ -1,6 +1,7 @@
 <?php
 
 class TeamsController extends AppController {
+	public $components = array('Age');
 	public $uses = array('Application',
 						'Role', 
 						'AssignedRole', 
@@ -8,7 +9,18 @@ class TeamsController extends AppController {
 	);
 	public $name = 'Teams';
 
-
+	public function isAuthorized($user) {
+		//$this->log($this->request['pass'][0],'debug');
+		// Permitted actions depend on user role
+		if (isset($user['role']) && array_key_exists($user['role'], Configure::read('user_roles'))) {
+			return true;
+		}
+		
+		// If no matches here used authorization from appcontroller
+		// i.e. admin gets everything
+		return parent::isAuthorized($user);
+	}
+	
 
 	/**
 	* view method
@@ -33,7 +45,9 @@ class TeamsController extends AppController {
 			//$applicationProblem = $this->request->data['Filter']['ApplicationProblem'];
 			//$this->Session->write('Filter.Problem', $applicationProblem);
 		}
-
+		//referece date for age calculations
+		$refdate = new DateTime($lhyear.'-'.Configure::read('ageAtDate'));
+		
 		//build the rolegroups array
 		$rolegroups = array('Role' => array(),
 								'Toddler' => array('AGL' => 62, 'Teacher' => 63, 'Lighthouse Keepers' => 21, 'Special Needs' => 69), 
@@ -118,11 +132,25 @@ class TeamsController extends AppController {
 																				'Person.Nickname',
 																				'Person.Telephone_1',
 																				'Person.Telephone_2',
+																				'Person.Date_of_birth',
 																				'Person.email'),
 															//'recursive' => 0,
 															'conditions' => array('Person.Person_ID' => $personids),
 															'order' => array('Person.Last_Name',
 																				'Person.First_Name')));
+			for ($i = 0; $i < count($data[$key]); $i++) {
+				//calculate age and add to person array
+	 			$refdate = new DateTime($lhyear.'-'.Configure::read('ageAtDate'));
+				$dummydob = new DateTime('1900-01-01'); //dummy dob in case one isn't present'
+				if (isset($data[$key][$i]['Person']['Date_of_birth'])) {
+					$dob = new DateTime($data[$key][$i]['Person']['Date_of_birth']);
+				} else {
+					$dob = $dummydob;
+				}
+				$data[$key][$i]['Person']['LHAge'] = $this->Age->getage($dob, $refdate);
+				//debug($person);
+			}
+			//debug($data[$key]);	
 		}
 		//build a "filtered application" array ready to add previous and next application
 		//this is to make it the same as its done in the applications controller
@@ -180,7 +208,7 @@ class TeamsController extends AppController {
 		}
 		$this->set('LHYears', $sessiondata['lhyears']);
 		//$this->set('problemFilterOptions', $this->problemFilterOptions);
-		
+		$this->set('refdate', $refdate);
 		$this->set('rolegroup', $group);
 		$this->set('helpersbyrole', $data);
 	}

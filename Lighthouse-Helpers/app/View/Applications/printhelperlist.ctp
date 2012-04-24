@@ -54,7 +54,7 @@
 	<ul>
 		<li><?php echo $this->Html->link(__('Helper Summary'), array('action' => 'index')); ?></li>
 		<li>&nbsp;</li>
-		<li><?php echo $this->Html->link(__('Print Requests'), '', array('class' => 'printMe')); ?></li>
+		<li><?php echo $this->Html->link(__('Print'), '', array('class' => 'printMe')); ?></li>
 		<li><?php echo $this->Html->link(__('Cancel Print'), array('action' => 'helperlist')); ?></li>
 		<li>&nbsp;</li>
 		<li><?php echo $this->Html->link(__('Log Out'), array('controller' => 'users','action' => 'logout')); ?></li>

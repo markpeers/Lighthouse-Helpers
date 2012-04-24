@@ -2,6 +2,7 @@
 App::uses('CakeEmail', 'Network/Email');
 
 class ApplicationsController extends AppController {
+	public $components = array('Age');
 	public $uses = array('Application', 
 						'Role', 
 						'Church', 
@@ -11,34 +12,22 @@ class ApplicationsController extends AppController {
 						);
 	public $name = 'Applications';
 	
-	/**
-	 * 
-	 * no of years CRB is valid.
-	 * @var int
-	 */
-	private $crbValidYears = 5; 
+	public function isAuthorized($user) {
+		// All registered users access these actions
+		if (in_array($this->action, array('index', 'helper'))) {
+			return true;
+		}
 	
-	/**
-	 * 
-	 * age at which a CRB is required
-	 * @var int
-	 */
-	private $crbRequiredAge = 17; 
-	
-	/**
-	 * 
-	 * when calculating age use this date (August 31)
-	 * @var string
-	 */
-	private $ageAtDate = '08-31'; 
-	
-	/**
-	 * 
-	 * reg team used various dummy email addresses to get paper applications through online system
-	 * this is an array of those dummy emails
-	 * @var array
-	 */
-	private $dummyemails = array('nomail@mail.com', 'no@email.com','noemail@mail.co.uk'); 
+ 		// Permitted actions depend on user role
+		if (isset($user['role']) && in_array($user['role'], array('reg_user'))) {
+			//if (in_array($this->action, array('printhelperlist'))) {
+				return true;
+			//}
+		}
+		// If no matches here used authorization from appcontroller
+		// i.e. admin gets everything
+		return parent::isAuthorized($user);
+	}
 	
 	/**
 	 * 
@@ -47,20 +36,7 @@ class ApplicationsController extends AppController {
 	 */
 	private $problemFilterOptions = array('All', 'No Reference', 'No Role', 'No CRB'); 
 	
-	/**
-	 * 
-	 * Lighthouse start dates, this array is currently in the main LH site, need to get this movedto db
-	 * Contains an array of date/time, which corrpesond with 00:00GMT on the Monday of each Lighthouse
-	 * Array MUST be in ascending date order
-	 * @var array
-	 */
-	private $lh_start_dates = array(
-		"2010-07-26 00:00:00",
-		"2011-07-25 00:00:00",
-		"2012-07-23 00:00:00",
-		"2013-07-29 00:00:00"
-	);
-	
+
 	public $paginate = array(
         'limit' => 10,
         'order' => array(
@@ -116,8 +92,8 @@ class ApplicationsController extends AppController {
 		$sql = $sql . 'FROM `reg_helpers_application` AS `Application` ';
 		$sql = $sql . 'LEFT JOIN `reg_helpers_person` AS `Person` ON (`Application`.`tblPerson_Person_ID` = `Person`.`Person_ID`) ';
 		$sql = $sql . 'WHERE `Application`.`year` = ' . $lhyear . ' ';
-		$sql = $sql . 'AND (' . $lhyear . ' - YEAR(`Person`.`Date_of_birth`)) - ("' . $this->ageAtDate . '" < MID(`Person`.`Date_of_birth`, 6, 5)) > ' . $this->crbRequiredAge . ' ';
-		$sql = $sql . 'AND (( `Application`.`CRB_date` IS NULL ) OR ( ' . $lhyear . ' - YEAR(`Application`.`CRB_date`)) - ("' . $this->ageAtDate . '" < MID(`Application`.`CRB_date`, 6, 5)) > ' . $this->crbValidYears . ') ';
+		$sql = $sql . 'AND (' . $lhyear . ' - YEAR(`Person`.`Date_of_birth`)) - ("' . Configure::read('ageAtDate') . '" < MID(`Person`.`Date_of_birth`, 6, 5)) > ' . Configure::read('crb.requiredAge') . ' ';
+		$sql = $sql . 'AND (( `Application`.`CRB_date` IS NULL ) OR ( ' . $lhyear . ' - YEAR(`Application`.`CRB_date`)) - ("' . Configure::read('ageAtDate') . '" < MID(`Application`.`CRB_date`, 6, 5)) > ' . Configure::read('crb.validYears') . ') ';
 
 		$crbApplications = $this->Application->query($sql);
 		$crbAttention = array();
@@ -179,24 +155,6 @@ class ApplicationsController extends AppController {
 		return $formatedpostcode;
 	}
 
-	/**
-	 * 
-	 * Calculates age in years from dob to refdate
-	 * (this is a work around because DateTime::diff isn't in PHP 5.2)
-	 * @param DateTime $dob
-	 * @param DateTime $refdate
-	 * @return number
-	 */
-	private function getlhage ($dob, $refdate) {
-		$year_diff  = $refdate->format('Y') - $dob->format('Y');
-		$month_diff = $refdate->format('m') - $dob->format('m');
-		$day_diff   = $refdate->format('d') - $dob->format('d');
-		if ($month_diff < 0) $year_diff--;
-		elseif (($month_diff==0) && ($day_diff < 0)) $year_diff--;
-		return $year_diff;
-	}
-	
-	
 	function index() {
 
 		//$this->Session->setflash('Flash message');
@@ -398,7 +356,9 @@ class ApplicationsController extends AppController {
 							'OtherRolesHeader' => $otherrolesheader,
 							'OtherRoles' => $otherroles,
 							'LHYears' => $sessiondata['lhyears'],
-							'problemFilterOptions' => $this->problemFilterOptions);
+							'problemFilterOptions' => $this->problemFilterOptions,
+							'team' => Configure::read('teams.'.$this->Auth->user('role')),
+							'user_role' => $this->Auth->user('role'));
 
 		$this->set('summarys', $summarys);
 	}
@@ -461,7 +421,7 @@ class ApplicationsController extends AppController {
 		$this->Session->write('FilterdApplications', $filtered_applications);
 		
 		$this->paginate['conditions'] = $conditions;
-
+		
 		$this->set('LHYears', $lhyears);
 		$this->set('problemFilterOptions', $this->problemFilterOptions);
 		$this->set('applications', $this->paginate());
@@ -516,6 +476,16 @@ class ApplicationsController extends AppController {
 			$application = $this->Application->find('first',
 	 				array('conditions' => array('Application.Application_ID' => $application_id )));
 			
+			//calculate age and add to person array
+			$refdate = new DateTime($year.'-'.Configure::read('ageAtDate'));
+			$dummydob = new DateTime('1900-01-01'); //dummy dob in case one isn't present'
+			if (isset($application['Person']['Date_of_birth'])) {
+				$dob = new DateTime($application['Person']['Date_of_birth']);
+			} else {
+				$dob = $dummydob;
+			}
+			$application['Person']['LHAge'] = $this->Age->getage($dob, $refdate);
+			
 			//get crb data from application records from previous years for this helper
 			$crbs = $this->Application->find('all', 
 					array('conditions' => array('Application.tblPerson_Person_ID' => $person_id,
@@ -532,6 +502,13 @@ class ApplicationsController extends AppController {
 												),
 							'recursive' => 0));
 			
+			if (in_array($this->Auth->user('role'), array('admin', 'reg_user'))) {
+				$hidetabs = false;
+			} else {
+				$hidetabs = true;
+			}
+			$this->set('hidetabs', $hidetabs);
+			$this->set('refdate', $refdate);
 			$this->set('crbs', $crbs);
 			$this->set('data', $application);
 	}
@@ -582,8 +559,6 @@ class ApplicationsController extends AppController {
 		} else {
 			$this->request->data = $this->Application->read(null, $application_id);
 		}
-		
-		$this->set('crbValidYears', $this->crbValidYears);
 	}
 	
 	/**
@@ -723,7 +698,7 @@ class ApplicationsController extends AppController {
 		$dateformat = 'jS F Y'; //format for all dates on the form
 		// get the date of the Monday of LH
 		// lh_start_dates contains monday of lh for each year so find the one for this year.
-		foreach ($this->lh_start_dates as $lh_start_date) :
+		foreach (Configure::read('lh_start_dates') as $lh_start_date) :
 			$lhmonday = new DateTime($lh_start_date);
 			if ($lhmonday->format('Y') == $lhyear) {
 				//Calculate the date of LH Friday
@@ -784,10 +759,9 @@ class ApplicationsController extends AppController {
 				} else {
 					$dob = $dummydob;
 				}
-				$refdate = new DateTime($lhyear.'-'.$this->ageAtDate);
+				$refdate = new DateTime($lhyear.'-'.Configure::read('ageAtDate'));
 				//$interval = $refdate->diff($dob);
-				//if ($interval->y < $this->crbRequiredAge) {
-				if ($this->getlhage($dob, $refdate) < $this->crbRequiredAge) {
+				if ($this->Age->getage($dob, $refdate) < Configure::read('crb.requiredAge')) {
 					$over16 = false;
 				} else {
 					$over16 = true;
@@ -798,7 +772,7 @@ class ApplicationsController extends AppController {
 					$helperwithapplications['Person']['Nickname'] = $helperwithapplications['Person']['First_Name'];
 				}
 				//check for a valid email - previous years reg team used various dummy email addresses
-				if (in_array($helperwithapplications['Person']['email'],$this->dummyemails) || $helperwithapplications['Person']['email']=='') {
+				if (in_array($helperwithapplications['Person']['email'],Configure::read('dummyemails')) || $helperwithapplications['Person']['email']=='') {
 					$helperwithapplications['Person']['email'] = 'None';
 				}
 				//format dates
@@ -866,6 +840,10 @@ class ApplicationsController extends AppController {
 		$sessiondata = $this->getsessiondata();
 		$lhyear = $sessiondata['lhyear'];
 		//debug(time());
+		//debug(Configure::configured());
+		//debug(Configure::read('test'));
+		$fred = Configure::read('crb.validYears');
+		$this->set('test', $fred);
 			}
 	
 	 

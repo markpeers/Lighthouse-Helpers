@@ -38,9 +38,21 @@ class AppController extends Controller {
         'Session',
         'Auth' => array(
             'loginRedirect' => array('controller' => 'applications', 'action' => 'index'),
-            'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home')
+            'logoutRedirect' => array('controller' => 'pages', 'action' => 'display', 'home'),
+    		'authorize' => array('Controller')
         )
     );
+    
+    public function isAuthorized($user = null) {
+    	// Admin can access every action
+	    if (isset($user['role']) && $user['role'] === 'admin') {
+	        return true;
+	    }
+	    // Default deny
+	    $this->Session->setflash('Sorry, you\'re not permitted to view that page' );
+	    	  
+	    return false;
+    }
 
     function beforeFilter() {
         $this->Auth->allow('display');

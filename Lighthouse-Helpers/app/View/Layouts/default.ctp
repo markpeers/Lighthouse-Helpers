@@ -30,12 +30,13 @@ $cakeDescription = 'Lighthouse Great Missenden - Helper Registration System';
 	<div id="container">
 		<div id="header">
 			<h1><?php echo $this->Html->link($cakeDescription, 'http://www.lighthousemissenden.org.uk'); ?></h1>
+			<?php //debug(__('Logged in user: %s',AuthComponent::user('username'))); ?>
 		</div>
 		
 		<div id="content">
 		
 			<?php //echo $this->element('menu1'); ?> 
-		
+									
 			<?php echo $this->Session->flash(); ?>
 						
 			<?php echo $content_for_layout; ?>

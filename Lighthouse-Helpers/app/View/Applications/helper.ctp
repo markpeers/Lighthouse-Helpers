@@ -27,19 +27,19 @@
 	<div id="tabs">
 		<ul>
 			<li><a href="#tabs-helper">Helper</a></li>
-			<li><a href="#tabs-referees-offered">Referees Offered</a></li>
-			<li><a href="#tabs-references">References</a></li>
-			<li><a href="#tabs-help-offered">Help Offered</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-referees-offered">Referees Offered</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-references">References</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-help-offered">Help Offered</a></li>
 			<li><a href="#tabs-roles-assigned">Roles Assigned</a></li>
 			<li><a href="#tabs-experience">Experience</a></li>
-			<li><a href="#tabs-health">Health</a></li>
-			<li><a href="#tabs-declaration">Declaration</a></li>
-			<li><a href="#tabs-crb">CRB</a></li>
-			<li><a href="#tabs-lh-address">LH Address</a></li>
-			<li><a href="#tabs-emergency-contact">Emergency Contact</a></li>
-			<li><a href="#tabs-notes">Notes</a></li>
-			<li><a href="#tabs-confirmation">Confirmation</a></li>
-			<li><a href="#tabs-confidential">Confidential</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-health">Health</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-declaration">Declaration</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-crb">CRB</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-lh-address">LH Address</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-emergency-contact">Emergency Contact</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-notes">Notes</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-confirmation">Confirmation</a></li>
+			<li <?php if ($hidetabs == true) {echo 'style="display:none"';}?> ><a href="#tabs-confidential">Confidential</a></li>
 		</ul>
 		<div id="tabs-helper">
 			<table>
@@ -51,7 +51,7 @@
 					$data['Person']['County'].'<br/>'.
 					$data['Person']['Post_Code'];?>
 					</td>
-					<td class="actions">
+					<td class="actions" <?php if ($hidetabs == true) {echo 'style="display:none"';}?> >
 						<?php echo $this->Html->link('Edit', array('controller' => 'people', 'action' => 'edit', $data['Person']['Person_ID'])); ?>
 					</td>
 				</tr>
@@ -70,6 +70,11 @@
 				<tr>
 					<td>Date of Birth:</td>
 					<td><?php echo date('jS F Y',strtotime($data['Person']['Date_of_birth']));?>
+					</td>
+				</tr>
+				<tr>
+					<td><?php echo __('Age at %s:',$refdate->format('d/m/y'));?></td>
+					<td><?php echo $data['Person']['LHAge'];?>
 					</td>
 				</tr>
 				<tr>
@@ -317,7 +322,7 @@
 		</div>
 		<div id="tabs-roles-assigned">
 			<table>
-				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th><th>Actions</th></tr>
+				<tr><th>Role</th><th>Sessions</th><th>Sent to Leader</th><th>Badge Printed</th><th <?php if ($hidetabs == true) {echo 'style="display:none"';}?> >Actions</th></tr>
 			<?php foreach ($data['AssignedRole'] as $assignedrole): 
 					$sessiontable = array(	array('heading' => 'am',
 														'week' => '-',
@@ -420,7 +425,7 @@
 								else {
 									echo 'Yes';
 								}?></td>
-					<td class="actions">
+					<td class="actions" <?php if ($hidetabs == true) {echo 'style="display:none"';}?> >
 						<?php echo $this->Html->link('Edit', array('controller' => 'AssignedRoles',
 																	'action' => 'edit',
 																	$assignedrole['Role_Assigned_ID']
@@ -437,7 +442,7 @@
 					</td>
 				</tr>
 			<?php endforeach; ?>
-				<tr>
+				<tr <?php if ($hidetabs == true) {echo 'style="display:none"';}?> >
 					<td></td>
 					<td></td>
 					<td></td>

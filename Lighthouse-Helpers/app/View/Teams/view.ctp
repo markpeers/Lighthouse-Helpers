@@ -11,10 +11,12 @@
 		<th></th>
 		<th></th>
 		<th></th>
+		<th></th>
 		<th class="actions"></th>
 	</tr>
     <tr>
 		<th>Name</th>
+		<th><?php echo __('Age at %s',$refdate->format('d/m/y'));?></th>
 		<th>Telephone 1</th>
 		<th>Telephone 2</th>
 		<th>email</th>
@@ -25,6 +27,7 @@
 		<tr>
 			<td><?php echo __('%s %s',$application['Person']['Nickname'],
 										$application['Person']['Last_Name']);?>
+			<td><?php echo $application['Person']['LHAge'];?></td>
 			<td><?php echo $application['Person']['Telephone_1'];?></td>
 			<td><?php echo $application['Person']['Telephone_2']; ?></td>
 			<td><?php echo $application['Person']['email']; ?></td>
@@ -46,6 +49,7 @@
     <?php endforeach; ?>
     <tr>
     <td>&nbsp;</td>
+    <td></td>
     <td></td>
     <td></td>
     <td></td>
